@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Python Week 0 — Setup & Your First Program</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#0a0c10;
+  --surface:#13161d;
+  --surface-2:#161b22;
+  --border:#21262d;
+  --text:#e6edf3;
+  --read:#c9d2dc;
+  --muted:#8b949e;
+  --accent:#00e5b0;
+  --warn:#e0606b;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--read);
+  font-family:'DM Sans',sans-serif;
+  font-weight:300;
+  margin:0;
+  line-height:1.75;
+  font-size:17px;
+}
+a{color:var(--accent);text-decoration:none;}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px;}
+
+.progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:50;transition:width .1s linear;}
+
+/* COVER */
+.cover{
+  min-height:100vh;display:flex;flex-direction:column;justify-content:center;
+  align-items:center;text-align:center;padding:80px 22px;border-bottom:1px solid var(--border);
+}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:28px;}
+.cover h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(42px,8.5vw,80px);line-height:1.05;margin:0 0 24px;color:var(--text);}
+.cover h1 em{color:var(--accent);font-style:normal;}
+.cover .sub{max-width:660px;color:var(--muted);font-size:clamp(16px,2.4vw,20px);margin:0 auto 40px;}
+.cover .meta{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:10px 20px;letter-spacing:1px;}
+
+.book{max-width:880px;margin:auto;padding:0 22px;}
+
+/* TOC */
+.toc{padding:80px 0 40px;border-bottom:1px solid var(--border);}
+.toc h2{font-family:'Syne',sans-serif;font-size:clamp(28px,5vw,40px);color:var(--text);margin:0 0 8px;}
+.toc .lead{color:var(--muted);margin:0 0 34px;}
+.toc ol{list-style:none;counter-reset:c;padding:0;margin:0;}
+.toc li{counter-increment:c;display:flex;align-items:baseline;gap:18px;padding:16px 0;border-top:1px solid var(--border);}
+.toc li:last-child{border-bottom:1px solid var(--border);}
+.toc li::before{content:counter(c,decimal-leading-zero);font-family:'JetBrains Mono',monospace;color:var(--accent);font-size:14px;min-width:34px;}
+.toc a{color:var(--text);font-size:19px;font-weight:500;}
+.toc a:hover{color:var(--accent);}
+.toc .desc{display:block;color:var(--muted);font-size:14px;font-weight:300;}
+
+.howto{padding:56px 0;border-bottom:1px solid var(--border);}
+.howto h3{font-family:'Syne',sans-serif;color:var(--text);font-size:24px;margin:0 0 14px;}
+
+/* CHAPTERS */
+.chapter{padding:84px 0;border-bottom:1px solid var(--border);}
+.chapter-no{font-family:'JetBrains Mono',monospace;color:var(--accent);font-size:13px;letter-spacing:3px;text-transform:uppercase;display:block;margin-bottom:16px;}
+.chapter h2{font-family:'Syne',sans-serif;font-weight:800;color:var(--text);font-size:clamp(32px,6vw,50px);line-height:1.08;margin:0 0 22px;}
+.chapter h3{font-family:'Syne',sans-serif;color:var(--text);font-size:23px;margin:42px 0 12px;}
+.chapter p{margin:0 0 18px;}
+.chapter p strong{color:var(--text);font-weight:600;}
+.lead-para{font-size:20px;color:var(--text);font-weight:400;}
+.chapter ul,.chapter ol.plain{padding-left:20px;}
+.chapter li{margin:8px 0;}
+
+/* CARDS */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin:28px 0;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;}
+.card h4{color:var(--accent);font-size:13px;letter-spacing:1px;text-transform:uppercase;margin:0 0 12px;font-weight:600;}
+.card p{margin:0;font-size:15.5px;color:var(--read);}
+
+/* TABLE */
+.tablewrap{overflow-x:auto;margin:26px 0;}
+table{width:100%;border-collapse:collapse;font-size:15px;min-width:420px;}
+th,td{text-align:left;padding:13px 16px;border-bottom:1px solid var(--border);vertical-align:top;}
+th{color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;text-transform:uppercase;font-weight:600;}
+td{color:var(--read);}
+td code,th code,p code,li code{font-family:'JetBrains Mono',monospace;font-size:13.5px;background:var(--surface-2);padding:2px 7px;border-radius:5px;color:var(--text);}
+
+/* TERMINAL / FILE CODE BLOCKS */
+.code{margin:22px 0;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface-2);}
+.code .bar{display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02);}
+.code .bar .dot{width:10px;height:10px;border-radius:50%;background:#2d333b;}
+.code .bar .name{margin-left:8px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);letter-spacing:1px;}
+.code pre{margin:0;padding:18px 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:14px;line-height:1.7;color:var(--read);white-space:pre;}
+.code pre .cmt{color:var(--muted);}
+.code pre .str{color:var(--accent);}
+.code pre .kw{color:#79c0ff;}
+
+/* SUCCESS CHECK */
+.success{background:linear-gradient(180deg,rgba(0,229,176,.07),rgba(0,229,176,.02));border:1px solid rgba(0,229,176,.32);border-radius:12px;padding:16px 20px;margin:18px 0;display:flex;gap:14px;}
+.success .tick{color:var(--accent);font-weight:700;font-family:'JetBrains Mono',monospace;}
+.success p{margin:0;font-size:15.5px;color:var(--text);}
+.success .lbl{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px;}
+
+/* STEP */
+.step{margin:40px 0;}
+.step .head{display:flex;align-items:center;gap:14px;margin-bottom:10px;}
+.step .num{font-family:'Syne',sans-serif;font-weight:800;color:var(--accent);font-size:28px;line-height:1;}
+.step .head h3{margin:0;font-size:22px;color:var(--text);}
+
+/* TAKEAWAY / NOTE / TRY */
+.takeaway,.note,.try{border-radius:14px;padding:22px 26px;margin:32px 0;}
+.takeaway{background:linear-gradient(180deg,rgba(0,229,176,.06),rgba(0,229,176,.02));border:1px solid rgba(0,229,176,.3);}
+.note{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);}
+.try{border:1px dashed rgba(0,229,176,.45);}
+.takeaway .label,.note .label,.try .label{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:10px;}
+.takeaway p,.note p{margin:0;color:var(--text);}
+.try ol{margin:0;padding-left:20px;}
+.try li{margin:8px 0;}
+
+/* CHECKLIST */
+.checklist{list-style:none;padding:0;margin:24px 0;}
+.checklist li{display:flex;align-items:flex-start;gap:14px;padding:12px 0;border-bottom:1px solid var(--border);font-size:16px;color:var(--text);}
+.checklist li::before{content:"";flex:0 0 22px;width:22px;height:22px;border:1.5px solid var(--accent);border-radius:6px;margin-top:2px;}
+
+.totop{display:inline-block;margin-top:30px;font-family:'JetBrains Mono',monospace;font-size:13px;}
+
+footer{padding:60px 22px 80px;text-align:center;color:var(--muted);}
+footer .brand{font-family:'Syne',sans-serif;color:var(--text);font-size:20px;margin-bottom:8px;}
+
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}.progress{transition:none;}}
+@media print{body{background:#fff;color:#111;}.progress,.totop{display:none;}.card,.code,.success,.takeaway,.note,.try{break-inside:avoid;}}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<!-- COVER -->
+<header class="cover">
+  <div class="eyebrow">Python Core · Week 0 · The First Class</div>
+  <h1>Set Up &amp; Run Your <em>First Program</em></h1>
+  <p class="sub">Before you write real Python, you build your workshop, the modern 2026 way. By the end of this guide you will have a professional setup and a program you wrote and ran yourself.</p>
+  <div class="meta">Python 3.14 · uv · ruff · ~90 minutes · No experience needed</div>
+</header>
+
+<div class="book">
+
+  <!-- TOC -->
+  <nav class="toc" aria-label="Contents">
+    <h2>What's inside</h2>
+    <p class="lead">Follow it top to bottom. Do not skip the success checks.</p>
+    <ol>
+      <li><a href="#ch1">What you'll build<span class="desc">Where these 12 weeks are going, and what today gives you.</span></a></li>
+      <li><a href="#ch2">The mental model<span class="desc">Four ideas that remove most beginner confusion.</span></a></li>
+      <li><a href="#ch3">Why uv, not pip<span class="desc">The reasoning behind the toolchain.</span></a></li>
+      <li><a href="#ch4">The install lab<span class="desc">Five steps, each with a success check.</span></a></li>
+      <li><a href="#ch5">Your first program<span class="desc">Write it, run it, format it.</span></a></li>
+      <li><a href="#ch6">Troubleshooting<span class="desc">The handful of issues that trip everyone up.</span></a></li>
+      <li><a href="#ch7">You're set up<span class="desc">Checklist, and what you can now do.</span></a></li>
+    </ol>
+  </nav>
+
+  <section class="howto">
+    <h3>How to use this guide</h3>
+    <p>You need a laptop and internet, nothing else. Read each part, run every command exactly as shown, and confirm the <strong style="color:var(--accent)">success check</strong> before moving on. If something breaks, jump to Troubleshooting. The goal today is not mastery. It is a working setup and your first running program.</p>
+  </section>
+
+  <!-- CH1 -->
+  <section class="chapter" id="ch1">
+    <span class="chapter-no">Part 01</span>
+    <h2>What you'll build</h2>
+    <p class="lead-para">Over 12 weekends you will build one real application from nothing: a command-line finance tracker that saves your data, is built from clean objects, is tested, and lives in a public GitHub repo you can show people.</p>
+    <p>Today you do not write much code. Today you set up the workshop. A carpenter sets up the bench before cutting wood, and that is what this session is. We are doing it the 2026 way, which means you skip the painful old setup that most beginners fight for weeks.</p>
+    <p>By the end of this guide, you will have run your first Python program.</p>
+    <a class="totop" href="#">↑ Back to top</a>
+  </section>
+
+  <!-- CH2 -->
+  <section class="chapter" id="ch2">
+    <span class="chapter-no">Part 02</span>
+    <h2>The mental model</h2>
+    <p class="lead-para">Get these four ideas straight before installing anything. They remove most of the confusion beginners run into.</p>
+
+    <h3>Python is two things with the same name</h3>
+    <p><strong>The language</strong> is the rules for writing instructions. <strong>The interpreter</strong> is the actual program on your computer that reads your <code>.py</code> file and runs it. When people say "install Python," they mean install the interpreter.</p>
+
+    <h3>A package manager installs code other people wrote</h3>
+    <p>Almost no real program is written from scratch. You pull in existing libraries. The package manager fetches them, installs the correct versions, and tracks what your project needs. Ours is <strong>uv</strong>.</p>
+
+    <h3>A virtual environment is a clean, isolated box for one project</h3>
+    <p>Different projects need different library versions. Without isolation, installing something for project A can break project B. A virtual environment gives each project its own private set of libraries so they never collide. uv creates and manages this box for you automatically. You will never manage it by hand.</p>
+
+    <h3>The four tools</h3>
+    <div class="grid">
+      <div class="card"><h4>uv</h4><p>Installs Python, manages your project, installs libraries, and runs your code.</p></div>
+      <div class="card"><h4>ruff</h4><p>Formats your code and flags mistakes, instantly.</p></div>
+      <div class="card"><h4>VS Code</h4><p>The editor where you write code.</p></div>
+      <div class="card"><h4>git / GitHub</h4><p>Saves your work's history and publishes it online.</p></div>
+    </div>
+    <p>That is the whole workshop. <strong>uv is the centerpiece.</strong></p>
+    <a class="totop" href="#">↑ Back to top</a>
+  </section>
+
+  <!-- CH3 -->
+  <section class="chapter" id="ch3">
+    <span class="chapter-no">Part 03</span>
+    <h2>Why uv, and why not pip?</h2>
+    <p class="lead-para">This is the question that decides whether you are learning the 2026 standard or the 2019 one. Here is the honest reasoning.</p>
+
+    <h3>The old way</h3>
+    <p>For years, a Python beginner had to learn several separate tools that each did one part of the job:</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Tool (old stack)</th><th>What it did</th></tr></thead>
+        <tbody>
+          <tr><td><code>pip</code></td><td>Installed libraries</td></tr>
+          <tr><td><code>venv</code> / <code>virtualenv</code></td><td>Created the isolated box</td></tr>
+          <tr><td><code>pyenv</code></td><td>Managed which Python version you used</td></tr>
+          <tr><td><code>poetry</code> / <code>pip-tools</code></td><td>Locked exact versions for reproducibility</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>You had to install them, learn them, and wire them together correctly. The classic beginner experience was losing days to "it works on my machine but not yours," activating and deactivating environments by hand, and fighting version conflicts.</p>
+
+    <h3>What uv changes</h3>
+    <p><strong>uv replaces all four of those tools with one fast program.</strong> One command initializes a project, installs the right Python, creates the isolated environment, installs libraries, and locks exact versions so the project runs identically on any machine.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Concern</th><th>Old way</th><th>uv</th></tr></thead>
+        <tbody>
+          <tr><td>Tools to learn</td><td>3-4 separate tools</td><td>1</td></tr>
+          <tr><td>Speed</td><td>Slow installs</td><td>10-100x faster (built in Rust)</td></tr>
+          <tr><td>Reproducible across machines</td><td>Manual, error-prone</td><td>Automatic, via a lockfile</td></tr>
+          <tr><td>Manage Python versions</td><td>A separate tool (pyenv)</td><td>Built in</td></tr>
+          <tr><td>Activate the environment</td><td>By hand, easy to forget</td><td>uv handles it (<code>uv run</code>)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>So why not just use pip?</h3>
+    <p>You <em>can</em> still use pip. It is not broken. But for someone learning in 2026, starting with uv means fewer moving parts, no "forgot to activate the environment" bugs, and projects that are reproducible by default, which is exactly the professional habit employers expect.</p>
+
+    <div class="note">
+      <span class="label">The honest counterpoint</span>
+      <p style="margin-bottom:14px">Most tutorials, Stack Overflow answers, and older courses still say <code>pip install X</code>. You will see pip everywhere, and that is fine. The translation is almost always one-to-one.</p>
+      <div class="tablewrap" style="margin:0">
+        <table>
+          <thead><tr><th>You see online</th><th>You type</th></tr></thead>
+          <tbody>
+            <tr><td><code>pip install requests</code></td><td><code>uv add requests</code></td></tr>
+            <tr><td><code>python script.py</code></td><td><code>uv run script.py</code></td></tr>
+            <tr><td><code>python -m venv</code> then activate</td><td>nothing, uv does it</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <h3>The same logic for ruff</h3>
+    <p>The old stack used three tools: <strong>black</strong> (formats code), <strong>flake8</strong> (finds mistakes), and <strong>isort</strong> (orders imports). <strong>ruff does all three, in one tool, in milliseconds.</strong> Same pattern: fewer tools, faster, one config file. It is used by major projects like FastAPI and Hugging Face, so it is not a toy choice.</p>
+
+    <div class="takeaway">
+      <span class="label">Bottom line</span>
+      <p>We teach uv and ruff because they are simpler <em>and</em> the current professional standard. You get the easier path and the resume-relevant path at the same time. That is rare. Take it.</p>
+    </div>
+    <a class="totop" href="#">↑ Back to top</a>
+  </section>
+
+  <!-- CH4 -->
+  <section class="chapter" id="ch4">
+    <span class="chapter-no">Part 04 · Hands-on</span>
+    <h2>The install lab</h2>
+    <p class="lead-para">Do these in order. After each step there is a success check. Do not move on until it passes.</p>
+
+    <div class="step">
+      <div class="head"><span class="num">1</span><h3>Install uv</h3></div>
+      <p>uv installs with a single command. The official page is the source of truth: <a href="https://docs.astral.sh/uv">docs.astral.sh/uv</a>. The commands below are the standard ones.</p>
+      <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">terminal · macOS / Linux</span></div><pre>curl -LsSf https://astral.sh/uv/install.sh | sh</pre></div>
+      <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">powershell · Windows</span></div><pre>powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"</pre></div>
+      <p>Close and reopen the terminal after installing.</p>
+      <div class="success"><span class="tick">✓</span><p><span class="lbl">Success check</span>Run <code>uv --version</code>. You should see a version number. If you see "command not found," check Troubleshooting.</p></div>
+    </div>
+
+    <div class="step">
+      <div class="head"><span class="num">2</span><h3>Install Python (via uv)</h3></div>
+      <p>You do not download Python from a website. uv does it:</p>
+      <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">terminal</span></div><pre>uv python install 3.14</pre></div>
+      <div class="success"><span class="tick">✓</span><p><span class="lbl">Success check</span>Run <code>uv python list</code>. You should see a 3.14 entry.</p></div>
+    </div>
+
+    <div class="step">
+      <div class="head"><span class="num">3</span><h3>Install VS Code + extensions</h3></div>
+      <ol class="plain">
+        <li>Install <strong>VS Code</strong> from <a href="https://code.visualstudio.com">code.visualstudio.com</a>.</li>
+        <li>Open it and go to the Extensions panel (the squares icon on the left).</li>
+        <li>Install the <strong>Python</strong> extension (by Microsoft) and the <strong>Ruff</strong> extension (by Astral).</li>
+      </ol>
+      <div class="success"><span class="tick">✓</span><p><span class="lbl">Success check</span>The Extensions panel shows both Python and Ruff as installed.</p></div>
+    </div>
+
+    <div class="step">
+      <div class="head"><span class="num">4</span><h3>Install git + create a GitHub account</h3></div>
+      <ol class="plain">
+        <li>Install <strong>git</strong> from <a href="https://git-scm.com">git-scm.com</a> (it may already be installed).</li>
+        <li>Create a free account at <a href="https://github.com">github.com</a>.</li>
+      </ol>
+      <div class="success"><span class="tick">✓</span><p><span class="lbl">Success check</span>Run <code>git --version</code>. You should see a version number, and you can log in to github.com.</p></div>
+    </div>
+
+    <div class="step">
+      <div class="head"><span class="num">5</span><h3>Create your first project</h3></div>
+      <p>Create the project pinned to Python 3.14, then enter it:</p>
+      <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">terminal</span></div><pre>uv init python-core --python 3.14
+cd python-core</pre></div>
+      <p>Open the folder in VS Code with <code>code .</code> and look at what uv created:</p>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>File</th><th>What it is</th></tr></thead>
+          <tbody>
+            <tr><td><code>main.py</code></td><td>A starter program</td></tr>
+            <tr><td><code>pyproject.toml</code></td><td>Your project's config and dependency list</td></tr>
+            <tr><td><code>.python-version</code></td><td>Pins this project to Python 3.14</td></tr>
+            <tr><td><code>README.md</code></td><td>Project description (auto-created)</td></tr>
+            <tr><td><code>.gitignore</code></td><td>Tells git what to ignore</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Now run it:</p>
+      <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">terminal</span></div><pre>uv run main.py</pre></div>
+      <div class="success"><span class="tick">✓</span><p><span class="lbl">Success check</span>You see <code>Hello from python-core!</code> printed. On this first run, uv quietly creates a <code>.venv/</code> folder and a <code>uv.lock</code> file: the isolated box and the version lock, made for you. You never typed a single environment command.</p></div>
+    </div>
+    <a class="totop" href="#">↑ Back to top</a>
+  </section>
+
+  <!-- CH5 -->
+  <section class="chapter" id="ch5">
+    <span class="chapter-no">Part 05 · The win</span>
+    <h2>Your first program</h2>
+    <p class="lead-para">The starter file just prints a fixed line. Let's make Python actually <em>do</em> something with input and math. This is a preview of Week 1.</p>
+    <p>Open <code>main.py</code> in VS Code, delete what's there, and type this exactly:</p>
+    <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py</span></div><pre>name = <span class="kw">input</span>(<span class="str">"What's your name? "</span>)
+<span class="kw">print</span>(<span class="str">f"Hello, {name}! You just ran a program you wrote."</span>)
+
+birth_year = <span class="kw">int</span>(<span class="kw">input</span>(<span class="str">"What year were you born? "</span>))
+age = <span class="str">2026</span> - birth_year
+<span class="kw">print</span>(<span class="str">f"You are about {age} years old."</span>)</pre></div>
+    <p>Run it:</p>
+    <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">terminal</span></div><pre>uv run main.py</pre></div>
+    <p>It asks your name, asks your birth year, and prints a personalized result. You just used three things you will formally learn in Week 1: <strong>input</strong>, <strong>f-strings</strong>, and <strong>converting text to numbers</strong> for math.</p>
+
+    <h3>Now format and check it with ruff</h3>
+    <p>Format the code (auto-fixes spacing and style):</p>
+    <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">terminal</span></div><pre>uvx ruff format .</pre></div>
+    <p>Check it for mistakes:</p>
+    <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">terminal</span></div><pre>uvx ruff check .</pre></div>
+    <div class="note"><span class="label">Note</span><p><code>uvx</code> runs a tool without installing it into your project. In Week 1 you will add ruff to the project properly. For today, this is enough to see it work.</p></div>
+
+    <div class="takeaway">
+      <span class="label">The loop you'll repeat for 12 weeks</span>
+      <p>write → run → format → check</p>
+    </div>
+    <a class="totop" href="#">↑ Back to top</a>
+  </section>
+
+  <!-- CH6 -->
+  <section class="chapter" id="ch6">
+    <span class="chapter-no">Part 06</span>
+    <h2>Troubleshooting</h2>
+    <p class="lead-para">Most first-session problems are one of these. Find your symptom, apply the fix.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Symptom</th><th>Cause</th><th>Fix</th></tr></thead>
+        <tbody>
+          <tr><td><code>uv: command not found</code></td><td>Terminal hasn't picked up uv's location</td><td>Fully close and reopen the terminal, or restart it.</td></tr>
+          <tr><td><code>uv run</code> says no Python found</td><td>Version not installed</td><td>Run <code>uv python install 3.14</code> again.</td></tr>
+          <tr><td>Commands run but nothing happens</td><td>You're in the wrong folder</td><td><code>cd python-core</code> first. Confirm <code>main.py</code> is there with <code>ls</code> (or <code>dir</code> on Windows).</td></tr>
+          <tr><td>Ruff does nothing in VS Code</td><td>Extension not active for this folder</td><td>Reopen the folder via <code>code .</code> from inside the project.</td></tr>
+          <tr><td><code>input()</code> errors out</td><td>Typed non-numeric text for birth year</td><td>Re-run and enter a number like <code>2001</code>.</td></tr>
+          <tr><td>Permission error on Windows install</td><td>PowerShell policy</td><td>Use the exact PowerShell command given; it sets the policy for that one command only.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <a class="totop" href="#">↑ Back to top</a>
+  </section>
+
+  <!-- CH7 -->
+  <section class="chapter" id="ch7" style="border-bottom:none;">
+    <span class="chapter-no">Part 07</span>
+    <h2>You're set up</h2>
+    <p class="lead-para">Confirm every box before you close this guide.</p>
+    <ul class="checklist">
+      <li><code>uv --version</code> works</li>
+      <li>Python 3.14 installed via uv</li>
+      <li>VS Code with Python + Ruff extensions</li>
+      <li>git installed, GitHub account created</li>
+      <li><code>python-core</code> created and <code>uv run main.py</code> printed output</li>
+      <li>Wrote and ran your own program</li>
+      <li>Ran <code>ruff format</code> and <code>ruff check</code></li>
+    </ul>
+
+    <div class="takeaway">
+      <span class="label">You can now</span>
+      <p>Set up a modern, reproducible Python project from scratch, run code, and format it, using the exact toolchain professionals use in 2026. You also understand <em>why</em> this stack, not just <em>how</em>.</p>
+    </div>
+
+    <div class="try">
+      <span class="label">Before next weekend (optional, 10 min)</span>
+      <ol>
+        <li>Open VS Code once more and re-run your program, to prove to yourself the setup persists.</li>
+        <li>Change the message in <code>main.py</code> and run it again. Then break it on purpose, read the error, and fix it. Getting comfortable with errors early is a superpower.</li>
+      </ol>
+    </div>
+    <a class="totop" href="#">↑ Back to top</a>
+  </section>
+
+</div>
+
+<footer>
+  <div class="brand">learning.nexolv.ai</div>
+  <div>Python Core — Week 0 · Setup &amp; Your First Program</div>
+</footer>
+
+<script>
+(function(){
+  var bar=document.getElementById('progress');
+  function update(){
+    var h=document.documentElement;
+    var max=h.scrollHeight-h.clientHeight;
+    bar.style.width=(max>0?(h.scrollTop/max)*100:0)+'%';
+  }
+  document.addEventListener('scroll',update,{passive:true});
+  update();
+})();
+</script>
+
+</body>
+</html>
