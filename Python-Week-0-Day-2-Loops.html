@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Python Week 0 · Day 2 — Loops</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#0a0c10;--surface:#13161d;--surface-2:#161b22;--border:#21262d;
+  --text:#e6edf3;--read:#c9d2dc;--muted:#8b949e;--accent:#00e5b0;--warn:#e0606b;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--read);font-family:'DM Sans',sans-serif;font-weight:300;margin:0;line-height:1.75;font-size:17px;}
+a{color:var(--accent);text-decoration:none;}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px;}
+.progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:50;transition:width .1s linear;}
+
+.cover{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:80px 22px;border-bottom:1px solid var(--border);}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:28px;}
+.cover h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(46px,9vw,86px);line-height:1.04;margin:0 0 24px;color:var(--text);}
+.cover h1 em{color:var(--accent);font-style:normal;}
+.cover .sub{max-width:640px;color:var(--muted);font-size:clamp(16px,2.4vw,20px);margin:0 auto 40px;}
+.cover .meta{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:10px 20px;letter-spacing:1px;}
+
+.book{max-width:880px;margin:auto;padding:0 22px;}
+
+.toc{padding:80px 0 40px;border-bottom:1px solid var(--border);}
+.toc h2{font-family:'Syne',sans-serif;font-size:clamp(28px,5vw,40px);color:var(--text);margin:0 0 8px;}
+.toc .lead{color:var(--muted);margin:0 0 34px;}
+.toc ol{list-style:none;counter-reset:c;padding:0;margin:0;}
+.toc li{counter-increment:c;display:flex;align-items:baseline;gap:18px;padding:16px 0;border-top:1px solid var(--border);}
+.toc li:last-child{border-bottom:1px solid var(--border);}
+.toc li::before{content:counter(c,decimal-leading-zero);font-family:'JetBrains Mono',monospace;color:var(--accent);font-size:14px;min-width:34px;}
+.toc a{color:var(--text);font-size:19px;font-weight:500;}
+.toc a:hover{color:var(--accent);}
+.toc .desc{display:block;color:var(--muted);font-size:14px;font-weight:300;}
+
+.howto{padding:56px 0;border-bottom:1px solid var(--border);}
+.howto h3{font-family:'Syne',sans-serif;color:var(--text);font-size:24px;margin:0 0 14px;}
+
+.chapter{padding:84px 0;border-bottom:1px solid var(--border);}
+.chapter-no{font-family:'JetBrains Mono',monospace;color:var(--accent);font-size:13px;letter-spacing:3px;text-transform:uppercase;display:block;margin-bottom:16px;}
+.chapter h2{font-family:'Syne',sans-serif;font-weight:800;color:var(--text);font-size:clamp(32px,6vw,50px);line-height:1.08;margin:0 0 22px;}
+.chapter h3{font-family:'Syne',sans-serif;color:var(--text);font-size:23px;margin:42px 0 12px;}
+.chapter p{margin:0 0 18px;}
+.chapter p strong{color:var(--text);font-weight:600;}
+.lead-para{font-size:20px;color:var(--text);font-weight:400;}
+.chapter ul{padding-left:20px;}
+.chapter li{margin:8px 0;}
+
+.tablewrap{overflow-x:auto;margin:26px 0;}
+table{width:100%;border-collapse:collapse;font-size:15px;min-width:420px;}
+th,td{text-align:left;padding:13px 16px;border-bottom:1px solid var(--border);vertical-align:top;}
+th{color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;text-transform:uppercase;font-weight:600;}
+td{color:var(--read);}
+code{font-family:'JetBrains Mono',monospace;font-size:13.5px;background:var(--surface-2);padding:2px 7px;border-radius:5px;color:var(--text);}
+
+.code{margin:22px 0;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface-2);}
+.code .bar{display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02);}
+.code .bar .dot{width:10px;height:10px;border-radius:50%;background:#2d333b;}
+.code .bar .name{margin-left:8px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);letter-spacing:1px;}
+.code pre{margin:0;padding:18px 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:14px;line-height:1.7;color:var(--read);white-space:pre;}
+.code pre .cmt{color:var(--muted);}
+.code pre .str{color:var(--accent);}
+.code pre .kw{color:#79c0ff;}
+.code pre .num{color:#f0a868;}
+.out{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);margin:-8px 0 22px;padding-left:4px;}
+.out b{color:var(--accent);font-weight:600;}
+
+.takeaway,.note,.try{border-radius:14px;padding:22px 26px;margin:32px 0;}
+.takeaway{background:linear-gradient(180deg,rgba(0,229,176,.06),rgba(0,229,176,.02));border:1px solid rgba(0,229,176,.3);}
+.note{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);}
+.takeaway .label,.note .label{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:10px;}
+.takeaway p,.note p{margin:0;color:var(--text);}
+
+.warnbox{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--warn);border-radius:14px;padding:8px 26px;margin:28px 0;}
+.warnbox h4{color:var(--warn);font-size:14px;letter-spacing:.5px;margin:18px 0 6px;font-weight:600;}
+.warnbox p{margin:0 0 16px;font-size:15.5px;}
+
+/* WORKED EXAMPLE */
+.worked{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:26px 28px;margin:30px 0;}
+.worked .tag{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);}
+.worked h3{margin:8px 0 14px;font-size:22px;}
+
+/* HOMEWORK */
+.hw{border:1px dashed rgba(0,229,176,.45);border-radius:16px;padding:8px 28px 24px;margin:30px 0;}
+.hwlabel{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);display:block;margin:22px 0 4px;}
+.hw ol{counter-reset:hw;list-style:none;padding:0;margin:14px 0 0;}
+.hw ol li{counter-increment:hw;position:relative;padding:18px 0 18px 46px;border-top:1px solid var(--border);font-size:16.5px;color:var(--text);}
+.hw ol li::before{content:counter(hw);position:absolute;left:0;top:16px;font-family:'Syne',sans-serif;font-weight:800;color:var(--accent);font-size:22px;}
+.hw ol li .hint{display:block;color:var(--muted);font-size:14px;font-weight:300;margin-top:4px;}
+
+.totop{display:inline-block;margin-top:30px;font-family:'JetBrains Mono',monospace;font-size:13px;}
+footer{padding:60px 22px 80px;text-align:center;color:var(--muted);}
+footer .brand{font-family:'Syne',sans-serif;color:var(--text);font-size:20px;margin-bottom:8px;}
+
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}.progress{transition:none;}}
+@media print{body{background:#fff;color:#111;}.progress,.totop{display:none;}.code,.worked,.hw,.takeaway,.note,.warnbox{break-inside:avoid;}}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<header class="cover">
+  <div class="eyebrow">Python Core · Week 0 · Day 2</div>
+  <h1>Mastering <em>Loops</em></h1>
+  <p class="sub">You already know what a loop is. Today you build real fluency: the patterns, the right loop for the job, and the mistakes to avoid, then you prove it with practice.</p>
+  <div class="meta">Python 3.14 · for · while · range · 2 worked examples · 8 exercises</div>
+</header>
+
+<div class="book">
+
+  <nav class="toc" aria-label="Contents">
+    <h2>What's inside</h2>
+    <p class="lead">Read top to bottom. The two worked examples are solved together in class; the homework is yours.</p>
+    <ol>
+      <li><a href="#ch1">What a loop really does<span class="desc">for vs while, and the range() that confuses everyone.</span></a></li>
+      <li><a href="#ch2">Looping over data<span class="desc">Walking through lists and strings.</span></a></li>
+      <li><a href="#ch3">The accumulator pattern<span class="desc">The single most useful loop habit.</span></a></li>
+      <li><a href="#ch4">break, continue &amp; common mistakes<span class="desc">Control the flow, dodge the traps.</span></a></li>
+      <li><a href="#ch5">Worked examples<span class="desc">Two problems, solved step by step.</span></a></li>
+      <li><a href="#ch6">Homework<span class="desc">Eight exercises to do on your own.</span></a></li>
+    </ol>
+  </nav>
+
+  <section class="howto">
+    <h3>Today's goal</h3>
+    <p>This is not your first time seeing a loop. The goal today is <strong>fluency</strong>: being able to look at a task and instantly know which loop to reach for and how to structure it. Type every example yourself in your <code>python-core</code> project and run it with <code>uv run main.py</code>.</p>
+  </section>
+
+  <!-- CH1 -->
+  <section class="chapter" id="ch1">
+    <span class="chapter-no">Part 01</span>
+    <h2>What a loop really does</h2>
+    <p class="lead-para">A loop runs the same block of code more than once, so you never repeat yourself by hand.</p>
+    <p>There are two loops, and choosing the right one is most of the skill.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Loop</th><th>Use it when</th><th>Shape</th></tr></thead>
+        <tbody>
+          <tr><td><code>for</code></td><td>You know what you're looping over (a range, list, or string)</td><td><code>for x in something:</code></td></tr>
+          <tr><td><code>while</code></td><td>You loop until a condition changes</td><td><code>while condition:</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>range() is where beginners trip</h3>
+    <p>Most <code>for</code> loops use <code>range()</code>. Read these four carefully; they cover almost everything:</p>
+    <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">range cheat sheet</span></div><pre><span class="kw">range</span>(<span class="num">5</span>)            <span class="cmt"># 0, 1, 2, 3, 4   (starts at 0, stops BEFORE 5)</span>
+<span class="kw">range</span>(<span class="num">1</span>, <span class="num">6</span>)         <span class="cmt"># 1, 2, 3, 4, 5</span>
+<span class="kw">range</span>(<span class="num">2</span>, <span class="num">11</span>, <span class="num">2</span>)     <span class="cmt"># 2, 4, 6, 8, 10  (third number = step)</span>
+<span class="kw">range</span>(<span class="num">10</span>, <span class="num">0</span>, <span class="num">-1</span>)    <span class="cmt"># 10 down to 1    (negative step counts down)</span></pre></div>
+
+    <p>A basic <code>for</code> loop and the same logic as a <code>while</code> loop:</p>
+    <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py</span></div><pre><span class="cmt"># for: print 1 to 5</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="kw">range</span>(<span class="num">1</span>, <span class="num">6</span>):
+    <span class="kw">print</span>(i)
+
+<span class="cmt"># while: the same result, written by hand</span>
+i = <span class="num">1</span>
+<span class="kw">while</span> i &lt;= <span class="num">5</span>:
+    <span class="kw">print</span>(i)
+    i += <span class="num">1</span>      <span class="cmt"># without this line, the loop never ends</span></pre></div>
+
+    <div class="takeaway">
+      <span class="label">Key idea</span>
+      <p>Use <code>for</code> when you know how many times or what you're iterating. Use <code>while</code> when you're waiting for a condition to flip.</p>
+    </div>
+    <a class="totop" href="#">↑ Back to top</a>
+  </section>
+
+  <!-- CH2 -->
+  <section class="chapter" id="ch2">
+    <span class="chapter-no">Part 02</span>
+    <h2>Looping over data</h2>
+    <p class="lead-para">A <code>for</code> loop walks through any sequence one item at a time. You don't need indexes for this.</p>
+    <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py</span></div><pre><span class="cmt"># loop over a list</span>
+<span class="kw">for</span> price <span class="kw">in</span> [<span class="num">120</span>, <span class="num">50</span>, <span class="num">90</span>]:
+    <span class="kw">print</span>(price)
+
+<span class="cmt"># loop over a string, one character at a time</span>
+<span class="kw">for</span> letter <span class="kw">in</span> <span class="str">"python"</span>:
+    <span class="kw">print</span>(letter)</pre></div>
+    <p>The variable name (<code>price</code>, <code>letter</code>) is yours to choose. On each pass it holds the next item. That is the whole concept.</p>
+    <a class="totop" href="#">↑ Back to top</a>
+  </section>
+
+  <!-- CH3 -->
+  <section class="chapter" id="ch3">
+    <span class="chapter-no">Part 03</span>
+    <h2>The accumulator pattern</h2>
+    <p class="lead-para">This is the most useful loop habit you will learn. Master it and most loop problems become easy.</p>
+    <p>The pattern: create a variable <strong>before</strong> the loop, then update it <strong>inside</strong> the loop on every pass.</p>
+    <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py</span></div><pre><span class="cmt"># SUM: add up numbers</span>
+total = <span class="num">0</span>                 <span class="cmt"># start before the loop</span>
+<span class="kw">for</span> n <span class="kw">in</span> [<span class="num">4</span>, <span class="num">8</span>, <span class="num">15</span>]:
+    total += n            <span class="cmt"># update each pass (total = total + n)</span>
+<span class="kw">print</span>(total)              <span class="cmt"># 27</span>
+
+<span class="cmt"># COUNT: count things works the same way</span>
+count = <span class="num">0</span>
+<span class="kw">for</span> n <span class="kw">in</span> [<span class="num">4</span>, <span class="num">8</span>, <span class="num">15</span>]:
+    count += <span class="num">1</span>
+<span class="kw">print</span>(count)              <span class="cmt"># 3</span></pre></div>
+    <div class="note">
+      <span class="label">Watch the placement</span>
+      <p>If you put <code>total = 0</code> <em>inside</em> the loop, it resets to zero on every pass and your answer is always wrong. The starting value goes <strong>above</strong> the loop.</p>
+    </div>
+    <a class="totop" href="#">↑ Back to top</a>
+  </section>
+
+  <!-- CH4 -->
+  <section class="chapter" id="ch4">
+    <span class="chapter-no">Part 04</span>
+    <h2>break, continue &amp; common mistakes</h2>
+    <p class="lead-para">Two keywords let you steer a loop, and four mistakes catch almost every beginner.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Keyword</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td><code>break</code></td><td>Exits the loop immediately, right now.</td></tr>
+          <tr><td><code>continue</code></td><td>Skips the rest of this pass and jumps to the next one.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="warnbox">
+      <h4>1 · Off-by-one</h4>
+      <p><code>range(1, 10)</code> stops at <strong>9</strong>, not 10. To include 10, write <code>range(1, 11)</code>.</p>
+      <h4>2 · Infinite while loop</h4>
+      <p>If the condition variable never changes inside a <code>while</code>, the loop runs forever. Always update it (e.g. <code>i += 1</code>).</p>
+      <h4>3 · Resetting the accumulator</h4>
+      <p>Putting <code>total = 0</code> inside the loop wipes your running total every pass. Keep it above the loop.</p>
+      <h4>4 · Indentation</h4>
+      <p>Code must be indented to be "inside" the loop. Code at the left margin runs only once, after the loop finishes.</p>
+    </div>
+    <a class="totop" href="#">↑ Back to top</a>
+  </section>
+
+  <!-- CH5 -->
+  <section class="chapter" id="ch5">
+    <span class="chapter-no">Part 05 · Solved together</span>
+    <h2>Worked examples</h2>
+    <p class="lead-para">We solve these two in class. They contain every pattern you need for the homework.</p>
+
+    <div class="worked">
+      <span class="tag">Example 1</span>
+      <h3>Sum of numbers from 1 to n</h3>
+      <p>Add up every number from 1 up to <code>n</code>. This is the accumulator pattern over a range.</p>
+      <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py</span></div><pre>n = <span class="num">10</span>
+total = <span class="num">0</span>
+<span class="kw">for</span> number <span class="kw">in</span> <span class="kw">range</span>(<span class="num">1</span>, n + <span class="num">1</span>):   <span class="cmt"># 1 to n, so stop at n+1</span>
+    total += number
+<span class="kw">print</span>(total)</pre></div>
+      <p class="out">Output: <b>55</b></p>
+      <p>Why <code>n + 1</code>? Because <code>range</code> stops one short. To <em>include</em> n, the stop value must be one past it.</p>
+    </div>
+
+    <div class="worked">
+      <span class="tag">Example 2</span>
+      <h3>Count the vowels in a word</h3>
+      <p>Walk through each letter, and count it only if it is a vowel. This combines string iteration, a condition, and a counter.</p>
+      <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py</span></div><pre>word = <span class="str">"education"</span>
+count = <span class="num">0</span>
+<span class="kw">for</span> letter <span class="kw">in</span> word:
+    <span class="kw">if</span> letter <span class="kw">in</span> <span class="str">"aeiou"</span>:        <span class="cmt"># is this letter a vowel?</span>
+        count += <span class="num">1</span>
+<span class="kw">print</span>(count)</pre></div>
+      <p class="out">Output: <b>5</b></p>
+      <p><code>letter in "aeiou"</code> is <code>True</code> when the letter is one of those five characters. Only then do we add to the count.</p>
+    </div>
+    <a class="totop" href="#">↑ Back to top</a>
+  </section>
+
+  <!-- CH6 -->
+  <section class="chapter" id="ch6" style="border-bottom:none;">
+    <span class="chapter-no">Part 06 · Your turn</span>
+    <h2>Homework</h2>
+    <p class="lead-para">Eight exercises. Each one is a single loop. Solve them in your <code>python-core</code> project and run each with <code>uv run main.py</code>.</p>
+
+    <div class="hw">
+      <span class="hwlabel">Exercises</span>
+      <ol>
+        <li>Print the numbers <strong>1 to 10</strong>, each on its own line.</li>
+        <li>Print the line <code>"Python is fun"</code> <strong>5 times</strong>.</li>
+        <li>Print all <strong>even numbers from 2 to 20</strong>.<span class="hint">Hint: the step in range() can do this for you.</span></li>
+        <li>Print the <strong>multiplication table of 7</strong>, from 7 × 1 up to 7 × 10.</li>
+        <li><strong>Count down</strong> from 10 to 1, then print <code>"Liftoff!"</code>.<span class="hint">Hint: range() with a negative step.</span></li>
+        <li>Given <code>prices = [120, 50, 90, 30]</code>, print <strong>each price</strong> on its own line.</li>
+        <li>Given <code>numbers = [4, 8, 15, 16, 23, 42]</code>, add them all and print the <strong>total</strong>.<span class="hint">Hint: accumulator pattern.</span></li>
+        <li>Given <code>numbers = [3, 12, 5, 20, 8, 17]</code>, count <strong>how many are greater than 10</strong> and print the count.<span class="hint">Hint: a counter plus an if.</span></li>
+      </ol>
+    </div>
+
+    <div class="takeaway">
+      <span class="label">When you're done</span>
+      <p>Every exercise above maps to something in the two worked examples. If you can do all eight without looking back, you have loop fluency. That is the goal.</p>
+    </div>
+    <a class="totop" href="#">↑ Back to top</a>
+  </section>
+
+</div>
+
+<footer>
+  <div class="brand">learning.nexolv.ai</div>
+  <div>Python Core — Week 0 · Day 2 · Loops</div>
+</footer>
+
+<script>
+(function(){
+  var bar=document.getElementById('progress');
+  function update(){var h=document.documentElement;var max=h.scrollHeight-h.clientHeight;bar.style.width=(max>0?(h.scrollTop/max)*100:0)+'%';}
+  document.addEventListener('scroll',update,{passive:true});update();
+})();
+</script>
+
+</body>
+</html>
