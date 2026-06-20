@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Python Week 0 · Day 3 — Loop Patterns</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#0a0c10;--surface:#13161d;--surface-2:#161b22;--border:#21262d;
+  --text:#e6edf3;--read:#c9d2dc;--muted:#8b949e;--accent:#00e5b0;--warn:#e0606b;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--read);font-family:'DM Sans',sans-serif;font-weight:300;margin:0;line-height:1.75;font-size:17px;}
+a{color:var(--accent);text-decoration:none;}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px;}
+.progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:50;transition:width .1s linear;}
+
+.cover{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:80px 22px;border-bottom:1px solid var(--border);}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:28px;}
+.cover h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(44px,8.5vw,82px);line-height:1.04;margin:0 0 24px;color:var(--text);}
+.cover h1 em{color:var(--accent);font-style:normal;}
+.cover .sub{max-width:650px;color:var(--muted);font-size:clamp(16px,2.4vw,20px);margin:0 auto 40px;}
+.cover .meta{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:10px 20px;letter-spacing:1px;}
+
+.book{max-width:880px;margin:auto;padding:0 22px;}
+
+.toc{padding:80px 0 40px;border-bottom:1px solid var(--border);}
+.toc h2{font-family:'Syne',sans-serif;font-size:clamp(28px,5vw,40px);color:var(--text);margin:0 0 8px;}
+.toc .lead{color:var(--muted);margin:0 0 34px;}
+.toc ol{list-style:none;counter-reset:c;padding:0;margin:0;}
+.toc li{counter-increment:c;display:flex;align-items:baseline;gap:18px;padding:16px 0;border-top:1px solid var(--border);}
+.toc li:last-child{border-bottom:1px solid var(--border);}
+.toc li::before{content:counter(c,decimal-leading-zero);font-family:'JetBrains Mono',monospace;color:var(--accent);font-size:14px;min-width:34px;}
+.toc a{color:var(--text);font-size:19px;font-weight:500;}
+.toc a:hover{color:var(--accent);}
+.toc .desc{display:block;color:var(--muted);font-size:14px;font-weight:300;}
+
+.howto{padding:56px 0;border-bottom:1px solid var(--border);}
+.howto h3{font-family:'Syne',sans-serif;color:var(--text);font-size:24px;margin:0 0 14px;}
+
+.chapter{padding:84px 0;border-bottom:1px solid var(--border);}
+.chapter-no{font-family:'JetBrains Mono',monospace;color:var(--accent);font-size:13px;letter-spacing:3px;text-transform:uppercase;display:block;margin-bottom:16px;}
+.chapter h2{font-family:'Syne',sans-serif;font-weight:800;color:var(--text);font-size:clamp(32px,6vw,50px);line-height:1.08;margin:0 0 22px;}
+.chapter h3{font-family:'Syne',sans-serif;color:var(--text);font-size:23px;margin:42px 0 12px;}
+.chapter p{margin:0 0 18px;}
+.chapter p strong{color:var(--text);font-weight:600;}
+.lead-para{font-size:20px;color:var(--text);font-weight:400;}
+
+code{font-family:'JetBrains Mono',monospace;font-size:13.5px;background:var(--surface-2);padding:2px 7px;border-radius:5px;color:var(--text);}
+
+.code{margin:22px 0;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface-2);}
+.code .bar{display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02);}
+.code .bar .dot{width:10px;height:10px;border-radius:50%;background:#2d333b;}
+.code .bar .name{margin-left:8px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);letter-spacing:1px;}
+.code pre{margin:0;padding:18px 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:14px;line-height:1.7;color:var(--read);white-space:pre;}
+.code pre .cmt{color:var(--muted);}
+.code pre .str{color:var(--accent);}
+.code pre .kw{color:#79c0ff;}
+.code pre .num{color:#f0a868;}
+.out{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);margin:-8px 0 22px;padding-left:4px;}
+.out b{color:var(--accent);font-weight:600;}
+
+.takeaway,.note{border-radius:14px;padding:22px 26px;margin:32px 0;}
+.takeaway{background:linear-gradient(180deg,rgba(0,229,176,.06),rgba(0,229,176,.02));border:1px solid rgba(0,229,176,.3);}
+.note{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);}
+.takeaway .label,.note .label{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:10px;}
+.takeaway p,.note p{margin:0;color:var(--text);}
+
+.warnbox{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--warn);border-radius:14px;padding:8px 26px;margin:28px 0;}
+.warnbox h4{color:var(--warn);font-size:14px;letter-spacing:.5px;margin:18px 0 6px;font-weight:600;}
+.warnbox p{margin:0 0 16px;font-size:15.5px;}
+
+.worked{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:26px 28px;margin:30px 0;}
+.worked .tag{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);}
+.worked h3{margin:8px 0 14px;font-size:22px;}
+
+/* WARM-UP */
+.warmup{border:1px solid rgba(0,229,176,.25);background:linear-gradient(180deg,rgba(0,229,176,.04),rgba(0,229,176,.01));border-radius:16px;padding:8px 28px 24px;margin:30px 0;}
+.warmup .wlabel{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);display:block;margin:22px 0 4px;}
+.warmup ol{counter-reset:w;list-style:none;padding:0;margin:14px 0 0;}
+.warmup ol li{counter-increment:w;position:relative;padding:18px 0 18px 44px;border-top:1px solid var(--border);font-size:16.5px;color:var(--text);}
+.warmup ol li::before{content:"W"counter(w);position:absolute;left:0;top:18px;font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--accent);font-size:14px;}
+.warmup ol li .hint{display:block;color:var(--muted);font-size:14px;font-weight:300;margin-top:4px;}
+
+/* HOMEWORK with target patterns */
+.hw{border:1px dashed rgba(0,229,176,.45);border-radius:16px;padding:8px 28px 24px;margin:30px 0;}
+.hwlabel{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);display:block;margin:22px 0 4px;}
+.hw ol{counter-reset:hw;list-style:none;padding:0;margin:14px 0 0;}
+.hw ol li{counter-increment:hw;position:relative;padding:22px 0 22px 46px;border-top:1px solid var(--border);font-size:16.5px;color:var(--text);}
+.hw ol li::before{content:counter(hw);position:absolute;left:0;top:20px;font-family:'Syne',sans-serif;font-weight:800;color:var(--accent);font-size:22px;}
+.hw ol li .hint{display:block;color:var(--muted);font-size:14px;font-weight:300;margin-top:6px;}
+.target{display:inline-block;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:10px 16px;margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.5;color:var(--accent);white-space:pre;}
+.badge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--bg);background:var(--accent);border-radius:999px;padding:2px 10px;margin-left:8px;vertical-align:middle;}
+
+.totop{display:inline-block;margin-top:30px;font-family:'JetBrains Mono',monospace;font-size:13px;}
+footer{padding:60px 22px 80px;text-align:center;color:var(--muted);}
+footer .brand{font-family:'Syne',sans-serif;color:var(--text);font-size:20px;margin-bottom:8px;}
+
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}.progress{transition:none;}}
+@media print{body{background:#fff;color:#111;}.progress,.totop{display:none;}.code,.worked,.hw,.warmup,.takeaway,.note,.warnbox{break-inside:avoid;}}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<header class="cover">
+  <div class="eyebrow">Python Core · Week 0 · Day 3</div>
+  <h1>Loop <em>Patterns</em></h1>
+  <p class="sub">One loop made you fluent. A loop inside a loop lets you draw. Today you learn nested loops and build your way up to a star diamond.</p>
+  <div class="meta">Python 3.14 · nested loops · 2 worked examples · 8 patterns</div>
+</header>
+
+<div class="book">
+
+  <nav class="toc" aria-label="Contents">
+    <h2>What's inside</h2>
+    <p class="lead">Warm up, learn the one new idea, watch two solved, then climb to the diamond.</p>
+    <ol>
+      <li><a href="#ch1">Warm-up<span class="desc">Three questions to reconnect, at today's level.</span></a></li>
+      <li><a href="#ch2">Nested loops<span class="desc">The one new concept: a loop inside a loop.</span></a></li>
+      <li><a href="#ch3">Worked examples<span class="desc">The square and the pyramid, solved together.</span></a></li>
+      <li><a href="#ch4">Common mistakes<span class="desc">The three traps that break every pattern.</span></a></li>
+      <li><a href="#ch5">Homework<span class="desc">Eight patterns, climbing to the diamond.</span></a></li>
+    </ol>
+  </nav>
+
+  <section class="howto">
+    <h3>Today's goal</h3>
+    <p>Yesterday every loop was flat. Today you learn the <strong>nested loop</strong>, which is the whole secret behind printing shapes. This day is a notch harder than Day 2, and that is on purpose. Work in your <code>python-core</code> project and run with <code>uv run main.py</code>.</p>
+  </section>
+
+  <!-- CH1 WARM-UP -->
+  <section class="chapter" id="ch1">
+    <span class="chapter-no">Part 01</span>
+    <h2>Warm-up</h2>
+    <p class="lead-para">Still single loops, but a step above Day 2. Each one combines two or three ideas. Do these before we start patterns.</p>
+    <div class="warmup">
+      <span class="wlabel">Reconnect</span>
+      <ol>
+        <li>Add up only the <strong>even numbers from 1 to 20</strong> and print the total.<span class="hint">Loop + a condition inside + a running total, all at once.</span></li>
+        <li>Find the <strong>largest number</strong> in <code>[12, 45, 7, 23, 89, 34]</code> and print it.<span class="hint">Keep a "biggest so far" variable and update it when you find something bigger.</span></li>
+        <li>Compute the <strong>average</strong> of <code>[10, 20, 30, 40, 50]</code>.<span class="hint">You need a running sum and a count, then divide at the end.</span></li>
+      </ol>
+    </div>
+    <a class="totop" href="#">↑ Back to top</a>
+  </section>
+
+  <!-- CH2 NESTED -->
+  <section class="chapter" id="ch2">
+    <span class="chapter-no">Part 02 · The new idea</span>
+    <h2>Nested loops</h2>
+    <p class="lead-para">A nested loop is simply a loop inside another loop. The inner loop runs all the way through on every single pass of the outer loop.</p>
+    <p>For patterns, think of it as <strong>rows and columns</strong>. The outer loop picks the row. The inner loop fills that row, left to right.</p>
+    <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py</span></div><pre><span class="kw">for</span> row <span class="kw">in</span> <span class="kw">range</span>(<span class="num">3</span>):          <span class="cmt"># 3 rows (outer loop)</span>
+    <span class="kw">for</span> col <span class="kw">in</span> <span class="kw">range</span>(<span class="num">4</span>):      <span class="cmt"># 4 stars per row (inner loop)</span>
+        <span class="kw">print</span>(<span class="str">"*"</span>, end=<span class="str">""</span>)  <span class="cmt"># end="" keeps stars on the SAME line</span>
+    <span class="kw">print</span>()                    <span class="cmt"># empty print() moves to the next row</span></pre></div>
+    <p class="out">Output:<br><b>****</b><br><b>****</b><br><b>****</b></p>
+
+    <p>Two small tools do all the work here:</p>
+    <div class="note">
+      <span class="label">Remember these two</span>
+      <p><code>print("*", end="")</code> prints without jumping to a new line, so a row stays together. An empty <code>print()</code> after the inner loop ends the row and starts the next one. Forget either and your pattern falls apart.</p>
+    </div>
+
+    <h3>The key move for triangles</h3>
+    <p>The inner loop's count does not have to be fixed. If it depends on the outer row number, you get a growing shape:</p>
+    <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py</span></div><pre><span class="kw">for</span> i <span class="kw">in</span> <span class="kw">range</span>(<span class="num">1</span>, <span class="num">6</span>):       <span class="cmt"># rows 1, 2, 3, 4, 5</span>
+    <span class="kw">for</span> j <span class="kw">in</span> <span class="kw">range</span>(i):     <span class="cmt"># row 1 gets 1 star, row 2 gets 2 ...</span>
+        <span class="kw">print</span>(<span class="str">"*"</span>, end=<span class="str">""</span>)
+    <span class="kw">print</span>()</pre></div>
+    <p class="out">Output:<br><b>*</b><br><b>**</b><br><b>***</b><br><b>****</b><br><b>*****</b></p>
+
+    <div class="takeaway">
+      <span class="label">Key idea</span>
+      <p>Outer loop = rows. Inner loop = what goes in each row. Make the inner count depend on the row number, and shapes appear.</p>
+    </div>
+    <a class="totop" href="#">↑ Back to top</a>
+  </section>
+
+  <!-- CH3 WORKED -->
+  <section class="chapter" id="ch3">
+    <span class="chapter-no">Part 03 · Solved together</span>
+    <h2>Worked examples</h2>
+    <p class="lead-para">These two carry every idea you need for the homework. The pyramid in particular is half of the diamond.</p>
+
+    <div class="worked">
+      <span class="tag">Example 1</span>
+      <h3>A 5 × 5 square</h3>
+      <p>The simplest nested loop: a fixed number of stars on a fixed number of rows.</p>
+      <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py</span></div><pre><span class="kw">for</span> row <span class="kw">in</span> <span class="kw">range</span>(<span class="num">5</span>):
+    <span class="kw">for</span> col <span class="kw">in</span> <span class="kw">range</span>(<span class="num">5</span>):
+        <span class="kw">print</span>(<span class="str">"*"</span>, end=<span class="str">""</span>)
+    <span class="kw">print</span>()</pre></div>
+      <p class="out">Output:<br><b>*****</b><br><b>*****</b><br><b>*****</b><br><b>*****</b><br><b>*****</b></p>
+    </div>
+
+    <div class="worked">
+      <span class="tag">Example 2</span>
+      <h3>A pyramid</h3>
+      <p>A pyramid adds one new thing: <strong>spaces before the stars</strong>, so each row is centered. Each row has two inner loops, one for spaces, one for stars.</p>
+      <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py</span></div><pre>n = <span class="num">5</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="kw">range</span>(<span class="num">1</span>, n + <span class="num">1</span>):
+    <span class="kw">for</span> s <span class="kw">in</span> <span class="kw">range</span>(n - i):       <span class="cmt"># spaces: 4, then 3, then 2 ...</span>
+        <span class="kw">print</span>(<span class="str">" "</span>, end=<span class="str">""</span>)
+    <span class="kw">for</span> j <span class="kw">in</span> <span class="kw">range</span>(<span class="num">2</span> * i - <span class="num">1</span>):   <span class="cmt"># stars: 1, 3, 5, 7, 9</span>
+        <span class="kw">print</span>(<span class="str">"*"</span>, end=<span class="str">""</span>)
+    <span class="kw">print</span>()</pre></div>
+      <p class="out">Output:<br><b>&nbsp;&nbsp;&nbsp;&nbsp;*</b><br><b>&nbsp;&nbsp;&nbsp;***</b><br><b>&nbsp;&nbsp;*****</b><br><b>&nbsp;*******</b><br><b>*********</b></p>
+      <div class="note">
+        <span class="label">Shortcut worth knowing</span>
+        <p>The same pyramid in one line per row, using string multiplication: <code>print(" " * (n - i) + "*" * (2 * i - 1))</code>. Both are correct. The nested version shows what is really happening; the shortcut is cleaner once you understand it.</p>
+      </div>
+    </div>
+    <a class="totop" href="#">↑ Back to top</a>
+  </section>
+
+  <!-- CH4 MISTAKES -->
+  <section class="chapter" id="ch4">
+    <span class="chapter-no">Part 04</span>
+    <h2>Common mistakes</h2>
+    <p class="lead-para">Almost every broken pattern is one of these three.</p>
+    <div class="warnbox">
+      <h4>1 · Forgetting end="" </h4>
+      <p>Without <code>end=""</code>, every star jumps to its own line and you get a vertical column instead of a row.</p>
+      <h4>2 · Forgetting the empty print()</h4>
+      <p>Without <code>print()</code> after the inner loop, every row runs together into one long line.</p>
+      <h4>3 · Wrong number of spaces</h4>
+      <p>In centered shapes, the spaces must shrink as the stars grow. Get the count wrong and the pyramid leans to one side.</p>
+    </div>
+    <a class="totop" href="#">↑ Back to top</a>
+  </section>
+
+  <!-- CH5 HOMEWORK -->
+  <section class="chapter" id="ch5" style="border-bottom:none;">
+    <span class="chapter-no">Part 05 · Your turn</span>
+    <h2>Homework</h2>
+    <p class="lead-para">Eight patterns, easiest to hardest. Each one is a small step up from the last. Match the target shape exactly.</p>
+
+    <div class="hw">
+      <span class="hwlabel">Build these</span>
+      <ol>
+        <li>A <strong>rectangle</strong> of stars, 4 rows tall and 7 wide.
+          <span class="target">*******
+*******
+*******
+*******</span>
+        </li>
+        <li>A <strong>right-angle triangle</strong> that grows.
+          <span class="target">*
+**
+***
+****
+*****</span>
+          <span class="hint">Inner loop count = the row number.</span>
+        </li>
+        <li>An <strong>upside-down triangle</strong> that shrinks.
+          <span class="target">*****
+****
+***
+**
+*</span>
+          <span class="hint">Start the row count high and go down.</span>
+        </li>
+        <li>A <strong>number triangle</strong> (print numbers, not stars).
+          <span class="target">1
+12
+123
+1234
+12345</span>
+          <span class="hint">In row i, print the numbers 1 up to i.</span>
+        </li>
+        <li>A <strong>right-aligned triangle</strong> (spaces push it to the right).
+          <span class="target">    *
+   **
+  ***
+ ****
+*****</span>
+          <span class="hint">Each row = some spaces, then some stars. Spaces shrink as stars grow.</span>
+        </li>
+        <li>An <strong>inverted pyramid</strong> (centered, shrinking). <span class="badge">bottom half</span>
+          <span class="target">*********
+ *******
+  *****
+   ***
+    *</span>
+          <span class="hint">Spaces grow each row while stars shrink. This is the bottom half of the diamond.</span>
+        </li>
+        <li>A <strong>pyramid</strong> at height 6 (build it yourself this time). <span class="badge">top half</span>
+          <span class="target">     *
+    ***
+   *****
+  *******
+ *********
+***********</span>
+          <span class="hint">Same idea as the worked example, just taller. This is the top half of the diamond.</span>
+        </li>
+        <li>A <strong>diamond</strong>. <span class="badge">capstone</span>
+          <span class="target">    *
+   ***
+  *****
+ *******
+*********
+ *******
+  *****
+   ***
+    *</span>
+          <span class="hint">Stack a pyramid (Q7 idea) on top of an inverted pyramid (Q6 idea). You already wrote both halves.</span>
+        </li>
+      </ol>
+    </div>
+
+    <div class="takeaway">
+      <span class="label">How to know you've won</span>
+      <p>If you finish the first six, you have understood nested loops. The diamond is a stretch goal: it is only Q7 and Q6 stacked together. Take a second attempt if the first one leans. Getting it slightly wrong and fixing it is the whole point.</p>
+    </div>
+    <a class="totop" href="#">↑ Back to top</a>
+  </section>
+
+</div>
+
+<footer>
+  <div class="brand">learning.nexolv.ai</div>
+  <div>Python Core — Week 0 · Day 3 · Loop Patterns</div>
+</footer>
+
+<script>
+(function(){
+  var bar=document.getElementById('progress');
+  function update(){var h=document.documentElement;var max=h.scrollHeight-h.clientHeight;bar.style.width=(max>0?(h.scrollTop/max)*100:0)+'%';}
+  document.addEventListener('scroll',update,{passive:true});update();
+})();
+</script>
+
+</body>
+</html>
