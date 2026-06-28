@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Python Week 1 · Day 1 — Data Structures</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#0a0c10;--surface:#13161d;--surface-2:#161b22;--border:#21262d;
+  --text:#e6edf3;--read:#c9d2dc;--muted:#8b949e;--accent:#00e5b0;--warn:#e0606b;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--read);font-family:'DM Sans',sans-serif;font-weight:300;margin:0;line-height:1.75;font-size:17px;}
+a{color:var(--accent);text-decoration:none;}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px;}
+.progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:50;transition:width .1s linear;}
+
+.cover{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:80px 22px;border-bottom:1px solid var(--border);}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:28px;}
+.cover h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(44px,8.5vw,82px);line-height:1.04;margin:0 0 24px;color:var(--text);}
+.cover h1 em{color:var(--accent);font-style:normal;}
+.cover .sub{max-width:650px;color:var(--muted);font-size:clamp(16px,2.4vw,20px);margin:0 auto 40px;}
+.cover .meta{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:10px 20px;letter-spacing:1px;}
+
+.book{max-width:880px;margin:auto;padding:0 22px;}
+
+.toc{padding:80px 0 40px;border-bottom:1px solid var(--border);}
+.toc h2{font-family:'Syne',sans-serif;font-size:clamp(28px,5vw,40px);color:var(--text);margin:0 0 8px;}
+.toc .lead{color:var(--muted);margin:0 0 34px;}
+.toc ol{list-style:none;counter-reset:c;padding:0;margin:0;}
+.toc li{counter-increment:c;display:flex;align-items:baseline;gap:18px;padding:16px 0;border-top:1px solid var(--border);}
+.toc li:last-child{border-bottom:1px solid var(--border);}
+.toc li::before{content:counter(c,decimal-leading-zero);font-family:'JetBrains Mono',monospace;color:var(--accent);font-size:14px;min-width:34px;}
+.toc a{color:var(--text);font-size:19px;font-weight:500;}
+.toc a:hover{color:var(--accent);}
+.toc .desc{display:block;color:var(--muted);font-size:14px;font-weight:300;}
+
+.howto{padding:56px 0;border-bottom:1px solid var(--border);}
+.howto h3{font-family:'Syne',sans-serif;color:var(--text);font-size:24px;margin:0 0 14px;}
+
+.chapter{padding:84px 0;border-bottom:1px solid var(--border);}
+.chapter-no{font-family:'JetBrains Mono',monospace;color:var(--accent);font-size:13px;letter-spacing:3px;text-transform:uppercase;display:block;margin-bottom:16px;}
+.chapter h2{font-family:'Syne',sans-serif;font-weight:800;color:var(--text);font-size:clamp(32px,6vw,50px);line-height:1.08;margin:0 0 22px;}
+.chapter h3{font-family:'Syne',sans-serif;color:var(--text);font-size:23px;margin:42px 0 12px;}
+.chapter h4{color:var(--accent);font-size:14px;letter-spacing:1px;text-transform:uppercase;margin:30px 0 8px;font-weight:600;}
+.chapter p{margin:0 0 18px;}
+.chapter p strong{color:var(--text);font-weight:600;}
+.lead-para{font-size:20px;color:var(--text);font-weight:400;}
+.chapter ul{padding-left:20px;}
+.chapter li{margin:8px 0;}
+
+code{font-family:'JetBrains Mono',monospace;font-size:13.5px;background:var(--surface-2);padding:2px 7px;border-radius:5px;color:var(--text);}
+
+.tablewrap{overflow-x:auto;margin:26px 0;}
+table{width:100%;border-collapse:collapse;font-size:14.5px;min-width:480px;}
+th,td{text-align:left;padding:12px 15px;border-bottom:1px solid var(--border);vertical-align:top;}
+th{color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:1px;text-transform:uppercase;font-weight:600;}
+td{color:var(--read);}
+td code{font-size:13px;}
+
+.code{margin:22px 0;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface-2);}
+.code .bar{display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02);}
+.code .bar .dot{width:10px;height:10px;border-radius:50%;background:#2d333b;}
+.code .bar .name{margin-left:8px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);letter-spacing:1px;}
+.code pre{margin:0;padding:18px 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:14px;line-height:1.7;color:var(--read);white-space:pre;}
+.code pre .cmt{color:var(--muted);}
+.code pre .str{color:var(--accent);}
+.code pre .kw{color:#79c0ff;}
+.code pre .num{color:#f0a868;}
+.out{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);margin:-8px 0 22px;padding-left:4px;}
+.out b{color:var(--accent);font-weight:600;}
+
+.takeaway,.note{border-radius:14px;padding:22px 26px;margin:30px 0;}
+.takeaway{background:linear-gradient(180deg,rgba(0,229,176,.06),rgba(0,229,176,.02));border:1px solid rgba(0,229,176,.3);}
+.note{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);}
+.takeaway .label,.note .label{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:10px;}
+.takeaway p,.note p{margin:0;color:var(--text);}
+
+.usewhen{display:inline-block;background:rgba(0,229,176,.08);border:1px solid rgba(0,229,176,.3);border-radius:10px;padding:12px 18px;margin:18px 0;font-size:15.5px;color:var(--text);}
+.usewhen b{color:var(--accent);font-weight:600;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:4px;}
+
+.analogy{border-left:3px solid var(--accent);padding:4px 0 4px 20px;margin:20px 0;font-family:'Syne',sans-serif;font-size:21px;color:var(--text);line-height:1.4;}
+
+.worked{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:26px 28px;margin:30px 0;}
+.worked .tag{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);}
+.worked h3{margin:8px 0 14px;font-size:22px;}
+
+.totop{display:inline-block;margin-top:30px;font-family:'JetBrains Mono',monospace;font-size:13px;}
+footer{padding:60px 22px 80px;text-align:center;color:var(--muted);}
+footer .brand{font-family:'Syne',sans-serif;color:var(--text);font-size:20px;margin-bottom:8px;}
+
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}.progress{transition:none;}}
+@media print{body{background:#fff;color:#111;}.progress,.totop{display:none;}.code,.worked,.takeaway,.note{break-inside:avoid;}}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<header class="cover">
+  <div class="eyebrow">Python Core · Week 1 · Day 1 · Handbook</div>
+  <h1>Data <em>Structures</em></h1>
+  <p class="sub">Four ways to hold your data: lists, tuples, dictionaries, and sets. Learn what each one is, when to reach for it, and the methods you'll use every day.</p>
+  <div class="meta">Python 3.14 · list · tuple · dict · set · 2 worked examples</div>
+</header>
+
+<div class="book">
+
+  <nav class="toc" aria-label="Contents">
+    <h2>What's inside</h2>
+    <p class="lead">Start with the big picture, then go deep on each structure, then watch two solved.</p>
+    <ol>
+      <li><a href="#ch1">The big picture<span class="desc">Why these exist, and the one table that compares all four.</span></a></li>
+      <li><a href="#ch2">Lists<span class="desc">The everyday workhorse: ordered and changeable.</span></a></li>
+      <li><a href="#ch3">Dictionaries<span class="desc">The big leap: look up by label, not position.</span></a></li>
+      <li><a href="#ch4">Tuples<span class="desc">A list that can never change.</span></a></li>
+      <li><a href="#ch5">Sets<span class="desc">A bag of unique items.</span></a></li>
+      <li><a href="#ch6">Comprehensions<span class="desc">The modern, one-line way to build collections.</span></a></li>
+      <li><a href="#ch7">Choosing the right one<span class="desc">A decision guide and the traps to avoid.</span></a></li>
+      <li><a href="#ch8">Worked examples<span class="desc">A list and a dictionary, solved step by step.</span></a></li>
+    </ol>
+  </nav>
+
+  <section class="howto">
+    <h3>How to use this handbook</h3>
+    <p>This is a reference you can keep. Read it once in order, then come back to any section when you need it. Type every code block into your <code>python-core</code> project and run it with <code>uv run main.py</code>. You learned how to <em>repeat</em> work with loops; now you learn how to <em>organize</em> the data those loops run on.</p>
+  </section>
+
+  <!-- CH1 BIG PICTURE -->
+  <section class="chapter" id="ch1">
+    <span class="chapter-no">Part 01</span>
+    <h2>The big picture</h2>
+    <p class="lead-para">A single value, like <code>age = 25</code>, holds one thing. Real programs deal with many things at once: a list of prices, a customer's details, a collection of tags. Data structures are the containers that hold many values in an organized way.</p>
+    <p>Python gives you four built-in containers. Almost everything you build uses one or more of them. The entire skill is knowing <strong>which container fits the job</strong>, and this one table is the answer. Everything else in this handbook is detail underneath it.</p>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Structure</th><th>Ordered?</th><th>Changeable?</th><th>Looked up by</th><th>Duplicates?</th><th>Written with</th></tr></thead>
+        <tbody>
+          <tr><td><strong>List</strong></td><td>Yes</td><td>Yes</td><td>Position <code>[0]</code></td><td>Allowed</td><td><code>[ ]</code></td></tr>
+          <tr><td><strong>Tuple</strong></td><td>Yes</td><td>No</td><td>Position <code>[0]</code></td><td>Allowed</td><td><code>( )</code></td></tr>
+          <tr><td><strong>Dict</strong></td><td>Yes</td><td>Yes</td><td>Key <code>["name"]</code></td><td>Keys must be unique</td><td><code>{key: value}</code></td></tr>
+          <tr><td><strong>Set</strong></td><td>No</td><td>Yes</td><td>Not indexed</td><td>Removed automatically</td><td><code>{ }</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Two questions sort out almost every choice:</p>
+    <ul>
+      <li><strong>Do I find items by position or by a label?</strong> Position means list or tuple. A label means dict.</li>
+      <li><strong>Will this data change after I create it?</strong> If it must stay fixed, use a tuple.</li>
+    </ul>
+
+    <div class="note">
+      <span class="label">One accuracy note</span>
+      <p>Older tutorials call dictionaries "unordered." Since Python 3.7 that is no longer true: dictionaries remember the order you inserted items. You can trust the order now.</p>
+    </div>
+    <a class="totop" href="#">↑ Back to top</a>
+  </section>
+
+  <!-- CH2 LISTS -->
+  <section class="chapter" id="ch2">
+    <span class="chapter-no">Part 02</span>
+    <h2>Lists</h2>
+    <p class="lead-para">A list is an ordered collection you can change. It is the structure you'll use most.</p>
+    <div class="analogy">A numbered shopping list. Items sit in order, and you can add, cross off, or rewrite any line.</div>
+
+    <h4>Creating a list</h4>
+    <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py</span></div><pre>scores = [<span class="num">85</span>, <span class="num">92</span>, <span class="num">78</span>]     <span class="cmt"># a list of numbers</span>
+names = [<span class="str">"Alice"</span>, <span class="str">"Bob"</span>]      <span class="cmt"># a list of strings</span>
+mixed = [<span class="num">1</span>, <span class="str">"two"</span>, <span class="kw">True</span>]      <span class="cmt"># types can be mixed</span>
+empty = []                    <span class="cmt"># an empty list, to fill later</span></pre></div>
+
+    <h4>Reading items by position (indexing)</h4>
+    <p>Lists are <strong>zero-indexed</strong>: the first item is at position 0. Negative numbers count from the end.</p>
+    <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py</span></div><pre>scores = [<span class="num">85</span>, <span class="num">92</span>, <span class="num">78</span>]
+<span class="kw">print</span>(scores[<span class="num">0</span>])    <span class="cmt"># 85  (first item)</span>
+<span class="kw">print</span>(scores[<span class="num">-1</span>])   <span class="cmt"># 78  (last item)</span>
+<span class="kw">print</span>(scores[<span class="num">0</span>:<span class="num">2</span>])  <span class="cmt"># [85, 92]  (a slice: positions 0 and 1)</span></pre></div>
+
+    <h4>Changing a list</h4>
+    <p>This is what "mutable" means: you can edit it after it exists.</p>
+    <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py</span></div><pre>scores = [<span class="num">85</span>, <span class="num">92</span>, <span class="num">78</span>]
+scores[<span class="num">0</span>] = <span class="num">90</span>        <span class="cmt"># change a value      -> [90, 92, 78]</span>
+scores.append(<span class="num">100</span>)    <span class="cmt"># add to the end      -> [90, 92, 78, 100]</span>
+scores.remove(<span class="num">92</span>)     <span class="cmt"># remove a value      -> [90, 78, 100]</span>
+last = scores.pop()    <span class="cmt"># remove + return last -> last = 100</span></pre></div>
+
+    <h4>The methods you'll actually use</h4>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Method</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td><code>append(x)</code></td><td>Add <code>x</code> to the end</td></tr>
+          <tr><td><code>insert(i, x)</code></td><td>Insert <code>x</code> at position <code>i</code></td></tr>
+          <tr><td><code>remove(x)</code></td><td>Remove the first <code>x</code></td></tr>
+          <tr><td><code>pop()</code></td><td>Remove and return the last item</td></tr>
+          <tr><td><code>sort()</code></td><td>Sort the list in place</td></tr>
+          <tr><td><code>reverse()</code></td><td>Reverse the order in place</td></tr>
+          <tr><td><code>len(list)</code></td><td>How many items (a built-in, not a method)</td></tr>
+          <tr><td><code>x in list</code></td><td>Is <code>x</code> present? Gives <code>True</code>/<code>False</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>Looping over a list</h4>
+    <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py</span></div><pre><span class="kw">for</span> score <span class="kw">in</span> scores:
+    <span class="kw">print</span>(score)</pre></div>
+
+    <div class="usewhen"><b>Use a list when</b> you have an ordered collection of items you'll add to, remove from, or change, and you find them by position.</div>
+    <a class="totop" href="#">↑ Back to top</a>
+  </section>
+
+  <!-- CH3 DICTS -->
+  <section class="chapter" id="ch3">
+    <span class="chapter-no">Part 03 · The leap</span>
+    <h2>Dictionaries</h2>
+    <p class="lead-para">A dictionary stores data as <strong>key: value</strong> pairs. Instead of finding things by position, you find them by a meaningful label. This is the most important idea of the week.</p>
+    <div class="analogy">A phone book. You don't read it front to back; you jump straight to a name and read the number beside it.</div>
+    <p>That analogy also explains <em>why</em> dictionaries matter: looking up a value by its key is extremely fast, even among millions of entries, because you go straight to it instead of scanning.</p>
+
+    <h4>Creating and reading a dictionary</h4>
+    <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py</span></div><pre>person = {
+    <span class="str">"name"</span>: <span class="str">"Alice"</span>,
+    <span class="str">"age"</span>: <span class="num">25</span>,
+    <span class="str">"city"</span>: <span class="str">"Delhi"</span>,
+}
+
+<span class="kw">print</span>(person[<span class="str">"name"</span>])   <span class="cmt"># Alice  (look up by key)</span>
+<span class="kw">print</span>(person[<span class="str">"age"</span>])    <span class="cmt"># 25</span></pre></div>
+
+    <h4>The KeyError trap, and how to avoid it</h4>
+    <p>Asking for a key that doesn't exist <strong>crashes</strong> the program with a <code>KeyError</code>. The safe way to read a maybe-missing key is <code>.get()</code>, which returns <code>None</code> (or a default you choose) instead of crashing.</p>
+    <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py</span></div><pre><span class="kw">print</span>(person[<span class="str">"email"</span>])              <span class="cmt"># crashes: KeyError</span>
+<span class="kw">print</span>(person.get(<span class="str">"email"</span>))          <span class="cmt"># None  (safe)</span>
+<span class="kw">print</span>(person.get(<span class="str">"email"</span>, <span class="str">"N/A"</span>))   <span class="cmt"># N/A  (safe, with a default)</span></pre></div>
+
+    <h4>Adding, updating, and removing</h4>
+    <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py</span></div><pre>person[<span class="str">"email"</span>] = <span class="str">"alice@mail.com"</span>   <span class="cmt"># add a new pair</span>
+person[<span class="str">"age"</span>] = <span class="num">26</span>                  <span class="cmt"># update an existing key</span>
+<span class="kw">del</span> person[<span class="str">"city"</span>]                  <span class="cmt"># remove a pair</span></pre></div>
+
+    <h4>The methods you'll actually use</h4>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Method</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td><code>get(key, default)</code></td><td>Read a key safely, no crash if missing</td></tr>
+          <tr><td><code>keys()</code></td><td>All the keys</td></tr>
+          <tr><td><code>values()</code></td><td>All the values</td></tr>
+          <tr><td><code>items()</code></td><td>All key-value pairs, for looping</td></tr>
+          <tr><td><code>update(other)</code></td><td>Merge another dict in</td></tr>
+          <tr><td><code>key in dict</code></td><td>Does this key exist?</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>Looping over a dictionary</h4>
+    <p>Use <code>.items()</code> to walk through both the key and the value together.</p>
+    <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py</span></div><pre><span class="kw">for</span> key, value <span class="kw">in</span> person.items():
+    <span class="kw">print</span>(<span class="str">f"{key}: {value}"</span>)</pre></div>
+    <p class="out">name: Alice<br>age: 26<br>email: alice@mail.com</p>
+
+    <div class="note">
+      <span class="label">The rules for keys</span>
+      <p>Keys must be <strong>unique</strong> (a second use of the same key overwrites the first) and <strong>unchangeable</strong> types like strings or numbers. Values can be anything, including lists or other dictionaries.</p>
+    </div>
+
+    <div class="usewhen"><b>Use a dict when</b> each piece of data has a natural label or identity, and you want to look it up by that label rather than by position.</div>
+    <a class="totop" href="#">↑ Back to top</a>
+  </section>
+
+  <!-- CH4 TUPLES -->
+  <section class="chapter" id="ch4">
+    <span class="chapter-no">Part 04</span>
+    <h2>Tuples</h2>
+    <p class="lead-para">A tuple is just a list that can never change. Same ordering, same indexing, but locked after creation.</p>
+    <div class="analogy">GPS coordinates. A point like (28.6, 77.2) is one fixed thing; editing half of it would be meaningless.</div>
+
+    <h4>Creating and reading</h4>
+    <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py</span></div><pre>point = (<span class="num">28</span>, <span class="num">77</span>)
+<span class="kw">print</span>(point[<span class="num">0</span>])     <span class="cmt"># 28  (index just like a list)</span>
+
+point[<span class="num">0</span>] = <span class="num">30</span>       <span class="cmt"># crashes: tuples cannot be changed</span></pre></div>
+
+    <h4>Unpacking: a tuple's best trick</h4>
+    <p>You can split a tuple straight into separate variables in one line. This is everywhere in real Python.</p>
+    <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py</span></div><pre>point = (<span class="num">28</span>, <span class="num">77</span>)
+x, y = point        <span class="cmt"># x = 28, y = 77</span>
+<span class="kw">print</span>(x, y)</pre></div>
+
+    <h4>Why tuples exist</h4>
+    <ul>
+      <li><strong>Safety.</strong> Data that should never change (a date of birth, a coordinate, fixed settings) can't be edited by accident.</li>
+      <li><strong>They can be dictionary keys.</strong> Because they never change, tuples are allowed as keys; lists are not.</li>
+      <li><strong>Returning several values.</strong> A function that returns <code>(min, max)</code> is returning a tuple.</li>
+    </ul>
+
+    <div class="usewhen"><b>Use a tuple when</b> a group of values belongs together and must stay fixed for the life of the program.</div>
+    <a class="totop" href="#">↑ Back to top</a>
+  </section>
+
+  <!-- CH5 SETS -->
+  <section class="chapter" id="ch5">
+    <span class="chapter-no">Part 05</span>
+    <h2>Sets</h2>
+    <p class="lead-para">A set is an unordered collection of <strong>unique</strong> items. Duplicates are removed automatically, and there is no position or index.</p>
+    <div class="analogy">A guest list with no repeats. Add the same name twice and it still appears once.</div>
+
+    <h4>Creating a set, and the duplicate magic</h4>
+    <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py</span></div><pre>colors = {<span class="str">"red"</span>, <span class="str">"green"</span>, <span class="str">"red"</span>}
+<span class="kw">print</span>(colors)        <span class="cmt"># {'red', 'green'}  (the duplicate is gone)</span>
+
+empty = <span class="kw">set</span>()        <span class="cmt"># NOTE: {} makes an empty DICT, not a set</span></pre></div>
+
+    <h4>The one job sets are great at: removing duplicates</h4>
+    <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py</span></div><pre>numbers = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">3</span>, <span class="num">3</span>]
+unique = <span class="kw">set</span>(numbers)       <span class="cmt"># {1, 2, 3}</span>
+<span class="kw">print</span>(<span class="kw">len</span>(unique))         <span class="cmt"># 3  (how many distinct values)</span></pre></div>
+
+    <h4>Core operations</h4>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Operation</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td><code>add(x)</code></td><td>Add an item</td></tr>
+          <tr><td><code>discard(x)</code></td><td>Remove an item if present (no crash if absent)</td></tr>
+          <tr><td><code>x in set</code></td><td>Fast membership test</td></tr>
+          <tr><td><code>a | b</code></td><td>Union: everything in either set</td></tr>
+          <tr><td><code>a &amp; b</code></td><td>Intersection: items in both sets</td></tr>
+          <tr><td><code>a - b</code></td><td>Difference: items in <code>a</code> but not <code>b</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="usewhen"><b>Use a set when</b> you only care whether items are present and unique, and you don't need order or position.</div>
+    <a class="totop" href="#">↑ Back to top</a>
+  </section>
+
+  <!-- CH6 COMPREHENSIONS -->
+  <section class="chapter" id="ch6">
+    <span class="chapter-no">Part 06 · Modern Python</span>
+    <h2>Comprehensions</h2>
+    <p class="lead-para">A comprehension builds a new collection from an existing one in a single readable line. This is the standard, professional way to do it in 2026, so learn it now, not "later."</p>
+
+    <h4>The long way vs the comprehension</h4>
+    <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py</span></div><pre><span class="cmt"># goal: double every number</span>
+
+<span class="cmt"># the long way</span>
+doubled = []
+<span class="kw">for</span> n <span class="kw">in</span> [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]:
+    doubled.append(n * <span class="num">2</span>)
+
+<span class="cmt"># the comprehension (same result)</span>
+doubled = [n * <span class="num">2</span> <span class="kw">for</span> n <span class="kw">in</span> [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]]   <span class="cmt"># [2, 4, 6]</span></pre></div>
+
+    <h4>Add a condition to filter</h4>
+    <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py</span></div><pre>nums = [<span class="num">3</span>, <span class="num">12</span>, <span class="num">5</span>, <span class="num">20</span>, <span class="num">8</span>]
+big = [n <span class="kw">for</span> n <span class="kw">in</span> nums <span class="kw">if</span> n > <span class="num">10</span>]   <span class="cmt"># [12, 20]</span></pre></div>
+
+    <h4>Dict and set comprehensions too</h4>
+    <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py</span></div><pre>squares = {n: n * n <span class="kw">for</span> n <span class="kw">in</span> [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]}   <span class="cmt"># {1: 1, 2: 4, 3: 9}</span>
+unique  = {n <span class="kw">for</span> n <span class="kw">in</span> [<span class="num">1</span>, <span class="num">1</span>, <span class="num">2</span>]}        <span class="cmt"># {1, 2}</span></pre></div>
+
+    <div class="takeaway">
+      <span class="label">Key idea</span>
+      <p>Read a comprehension right to left: "for each n in the data, (optionally if it passes a test), put this expression into the new collection." It is a loop, compressed into the shape of the result.</p>
+    </div>
+    <a class="totop" href="#">↑ Back to top</a>
+  </section>
+
+  <!-- CH7 CHOOSING -->
+  <section class="chapter" id="ch7">
+    <span class="chapter-no">Part 07</span>
+    <h2>Choosing the right one</h2>
+    <p class="lead-para">A short decision guide, then the traps that catch every beginner.</p>
+
+    <h4>The decision guide</h4>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>If you need to...</th><th>Reach for</th></tr></thead>
+        <tbody>
+          <tr><td>Keep an ordered collection you'll change</td><td><strong>List</strong></td></tr>
+          <tr><td>Look data up by a label or name</td><td><strong>Dict</strong></td></tr>
+          <tr><td>Lock a group of values so they can't change</td><td><strong>Tuple</strong></td></tr>
+          <tr><td>Track unique items or remove duplicates</td><td><strong>Set</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>Traps to avoid</h4>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>The trap</th><th>The fix</th></tr></thead>
+        <tbody>
+          <tr><td>Using a list when you keep searching it for a label</td><td>That's a dict's job. Switch to key lookup.</td></tr>
+          <tr><td><code>dict[key]</code> crashing on missing keys</td><td>Use <code>dict.get(key, default)</code>.</td></tr>
+          <tr><td>Expecting a set to keep order or duplicates</td><td>It won't, by design. Use a list if you need those.</td></tr>
+          <tr><td>Writing <code>{}</code> for an empty set</td><td><code>{}</code> is an empty dict. Use <code>set()</code>.</td></tr>
+          <tr><td>Trying to change a tuple</td><td>You can't. Use a list if the data must change.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <a class="totop" href="#">↑ Back to top</a>
+  </section>
+
+  <!-- CH8 WORKED -->
+  <section class="chapter" id="ch8" style="border-bottom:none;">
+    <span class="chapter-no">Part 08 · Solved together</span>
+    <h2>Worked examples</h2>
+    <p class="lead-para">We solve these two in class. One drills lists, one drills dictionaries, the two structures you'll lean on most.</p>
+
+    <div class="worked">
+      <span class="tag">Example 1 · Lists</span>
+      <h3>A simple gradebook</h3>
+      <p>Collect scores, add a new one, then report the total, average, and highest. This uses list methods plus the built-ins <code>sum</code>, <code>len</code>, and <code>max</code>.</p>
+      <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py</span></div><pre>scores = [<span class="num">85</span>, <span class="num">92</span>, <span class="num">78</span>, <span class="num">90</span>, <span class="num">88</span>]
+scores.append(<span class="num">95</span>)              <span class="cmt"># a new score arrives</span>
+
+total = <span class="kw">sum</span>(scores)
+average = total / <span class="kw">len</span>(scores)
+highest = <span class="kw">max</span>(scores)
+
+<span class="kw">print</span>(<span class="str">f"All scores: {scores}"</span>)
+<span class="kw">print</span>(<span class="str">f"Average:    {average}"</span>)
+<span class="kw">print</span>(<span class="str">f"Highest:    {highest}"</span>)</pre></div>
+      <p class="out">All scores: <b>[85, 92, 78, 90, 88, 95]</b><br>Average:    <b>88.0</b><br>Highest:    <b>95</b></p>
+      <p><code>sum</code>, <code>len</code>, and <code>max</code> are built-in functions that work on any list. You did the same kind of total and max by hand with loops on Day-2 of loops; here they come for free.</p>
+    </div>
+
+    <div class="worked">
+      <span class="tag">Example 2 · Dictionaries</span>
+      <h3>A contact record</h3>
+      <p>Store one person's details, read a field safely, add a new field, then print every field with a loop. This is the exact shape behind tomorrow's project.</p>
+      <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py</span></div><pre>contact = {
+    <span class="str">"name"</span>: <span class="str">"Alice"</span>,
+    <span class="str">"phone"</span>: <span class="str">"555-0100"</span>,
+    <span class="str">"city"</span>: <span class="str">"Delhi"</span>,
+}
+
+<span class="kw">print</span>(contact[<span class="str">"name"</span>])                 <span class="cmt"># direct lookup</span>
+<span class="kw">print</span>(contact.get(<span class="str">"email"</span>, <span class="str">"no email"</span>))  <span class="cmt"># safe lookup of a missing key</span>
+
+contact[<span class="str">"email"</span>] = <span class="str">"alice@mail.com"</span>     <span class="cmt"># add a field</span>
+
+<span class="kw">for</span> field, value <span class="kw">in</span> contact.items():
+    <span class="kw">print</span>(<span class="str">f"{field}: {value}"</span>)</pre></div>
+      <p class="out">Alice<br>no email<br>name: Alice<br>phone: 555-0100<br>city: Delhi<br>email: alice@mail.com</p>
+      <p>Notice the pattern: a dict holds one labeled record, and <code>.items()</code> walks every label and value. Put many of these dicts in a list, and you can model an entire address book, which is exactly where Day 2 goes.</p>
+    </div>
+
+    <div class="takeaway">
+      <span class="label">Where this is heading</span>
+      <p>A <strong>list of dictionaries</strong> is the most useful shape in real programming: a list of records, each record a labeled dict. Today you learned both halves. Tomorrow you combine them into a real project.</p>
+    </div>
+    <a class="totop" href="#">↑ Back to top</a>
+  </section>
+
+</div>
+
+<footer>
+  <div class="brand">learning.nexolv.ai</div>
+  <div>Python Core — Week 1 · Day 1 · Data Structures Handbook</div>
+</footer>
+
+<script>
+(function(){
+  var bar=document.getElementById('progress');
+  function update(){var h=document.documentElement;var max=h.scrollHeight-h.clientHeight;bar.style.width=(max>0?(h.scrollTop/max)*100:0)+'%';}
+  document.addEventListener('scroll',update,{passive:true});update();
+})();
+</script>
+
+</body>
+</html>
