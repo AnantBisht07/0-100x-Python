@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Python Week 1 · Day 2 — The List of Dicts Project</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#0a0c10;--surface:#13161d;--surface-2:#161b22;--border:#21262d;
+  --text:#e6edf3;--read:#c9d2dc;--muted:#8b949e;--accent:#00e5b0;--warn:#e0606b;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--read);font-family:'DM Sans',sans-serif;font-weight:300;margin:0;line-height:1.75;font-size:17px;}
+a{color:var(--accent);text-decoration:none;}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px;}
+.progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:50;transition:width .1s linear;}
+
+.cover{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:80px 22px;border-bottom:1px solid var(--border);}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:28px;}
+.cover h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(40px,8vw,76px);line-height:1.05;margin:0 0 24px;color:var(--text);}
+.cover h1 em{color:var(--accent);font-style:normal;}
+.cover .sub{max-width:660px;color:var(--muted);font-size:clamp(16px,2.4vw,20px);margin:0 auto 40px;}
+.cover .meta{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:10px 20px;letter-spacing:1px;}
+
+.book{max-width:880px;margin:auto;padding:0 22px;}
+
+.toc{padding:80px 0 40px;border-bottom:1px solid var(--border);}
+.toc h2{font-family:'Syne',sans-serif;font-size:clamp(28px,5vw,40px);color:var(--text);margin:0 0 8px;}
+.toc .lead{color:var(--muted);margin:0 0 34px;}
+.toc ol{list-style:none;counter-reset:c;padding:0;margin:0;}
+.toc li{counter-increment:c;display:flex;align-items:baseline;gap:18px;padding:16px 0;border-top:1px solid var(--border);}
+.toc li:last-child{border-bottom:1px solid var(--border);}
+.toc li::before{content:counter(c,decimal-leading-zero);font-family:'JetBrains Mono',monospace;color:var(--accent);font-size:14px;min-width:34px;}
+.toc a{color:var(--text);font-size:19px;font-weight:500;}
+.toc a:hover{color:var(--accent);}
+.toc .desc{display:block;color:var(--muted);font-size:14px;font-weight:300;}
+
+.howto{padding:56px 0;border-bottom:1px solid var(--border);}
+.howto h3{font-family:'Syne',sans-serif;color:var(--text);font-size:24px;margin:0 0 14px;}
+
+.chapter{padding:84px 0;border-bottom:1px solid var(--border);}
+.chapter-no{font-family:'JetBrains Mono',monospace;color:var(--accent);font-size:13px;letter-spacing:3px;text-transform:uppercase;display:block;margin-bottom:16px;}
+.chapter h2{font-family:'Syne',sans-serif;font-weight:800;color:var(--text);font-size:clamp(32px,6vw,50px);line-height:1.08;margin:0 0 22px;}
+.chapter h3{font-family:'Syne',sans-serif;color:var(--text);font-size:23px;margin:42px 0 12px;}
+.chapter h4{color:var(--accent);font-size:14px;letter-spacing:1px;text-transform:uppercase;margin:30px 0 8px;font-weight:600;}
+.chapter p{margin:0 0 18px;}
+.chapter p strong{color:var(--text);font-weight:600;}
+.lead-para{font-size:20px;color:var(--text);font-weight:400;}
+.chapter ul{padding-left:20px;}
+.chapter li{margin:8px 0;}
+
+code{font-family:'JetBrains Mono',monospace;font-size:13.5px;background:var(--surface-2);padding:2px 7px;border-radius:5px;color:var(--text);}
+
+.tablewrap{overflow-x:auto;margin:26px 0;}
+table{width:100%;border-collapse:collapse;font-size:14.5px;min-width:420px;}
+th,td{text-align:left;padding:12px 15px;border-bottom:1px solid var(--border);vertical-align:top;}
+th{color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:1px;text-transform:uppercase;font-weight:600;}
+td{color:var(--read);}
+
+.code{margin:22px 0;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface-2);}
+.code .bar{display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02);}
+.code .bar .dot{width:10px;height:10px;border-radius:50%;background:#2d333b;}
+.code .bar .name{margin-left:8px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);letter-spacing:1px;}
+.code pre{margin:0;padding:18px 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:14px;line-height:1.7;color:var(--read);white-space:pre;}
+.code pre .cmt{color:var(--muted);}
+.code pre .str{color:var(--accent);}
+.code pre .kw{color:#79c0ff;}
+.code pre .num{color:#f0a868;}
+.out{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);margin:-8px 0 22px;padding-left:4px;white-space:pre-wrap;}
+.out b{color:var(--accent);font-weight:600;}
+
+.takeaway,.note{border-radius:14px;padding:22px 26px;margin:30px 0;}
+.takeaway{background:linear-gradient(180deg,rgba(0,229,176,.06),rgba(0,229,176,.02));border:1px solid rgba(0,229,176,.3);}
+.note{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);}
+.takeaway .label,.note .label{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:10px;}
+.takeaway p,.note p{margin:0;color:var(--text);}
+
+.warnbox{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--warn);border-radius:14px;padding:8px 26px;margin:28px 0;}
+.warnbox h4{color:var(--warn);font-size:14px;letter-spacing:.5px;margin:18px 0 6px;font-weight:600;}
+.warnbox p{margin:0 0 16px;font-size:15.5px;}
+
+.worked{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:26px 28px;margin:30px 0;}
+.worked .tag{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);}
+.worked h3{margin:8px 0 14px;font-size:22px;}
+
+.step{margin:40px 0;}
+.step .head{display:flex;align-items:center;gap:14px;margin-bottom:10px;}
+.step .num{font-family:'Syne',sans-serif;font-weight:800;color:var(--accent);font-size:28px;line-height:1;}
+.step .head h3{margin:0;font-size:22px;color:var(--text);}
+
+.hw{border:1px dashed rgba(0,229,176,.45);border-radius:16px;padding:8px 28px 24px;margin:30px 0;}
+.hwlabel{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);display:block;margin:22px 0 4px;}
+.hw ol{counter-reset:hw;list-style:none;padding:0;margin:14px 0 0;}
+.hw ol li{counter-increment:hw;position:relative;padding:18px 0 18px 46px;border-top:1px solid var(--border);font-size:16.5px;color:var(--text);}
+.hw ol li::before{content:counter(hw);position:absolute;left:0;top:16px;font-family:'Syne',sans-serif;font-weight:800;color:var(--accent);font-size:22px;}
+.hw ol li .hint{display:block;color:var(--muted);font-size:14px;font-weight:300;margin-top:4px;}
+.badge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--bg);background:var(--accent);border-radius:999px;padding:2px 10px;margin-left:8px;vertical-align:middle;}
+
+.totop{display:inline-block;margin-top:30px;font-family:'JetBrains Mono',monospace;font-size:13px;}
+footer{padding:60px 22px 80px;text-align:center;color:var(--muted);}
+footer .brand{font-family:'Syne',sans-serif;color:var(--text);font-size:20px;margin-bottom:8px;}
+
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}.progress{transition:none;}}
+@media print{body{background:#fff;color:#111;}.progress,.totop{display:none;}.code,.worked,.hw,.takeaway,.note,.warnbox{break-inside:avoid;}}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<header class="cover">
+  <div class="eyebrow">Python Core · Week 1 · Day 2 · Project</div>
+  <h1>The List of Dicts:<br><em>Finance Tracker v1</em></h1>
+  <p class="sub">Yesterday you learned the four structures. Today you combine the two most important ones into the single most useful shape in programming, and build the first version of an app you will keep upgrading for weeks.</p>
+  <div class="meta">Python 3.14 · list of dicts · guided build · homework extensions</div>
+</header>
+
+<div class="book">
+
+  <nav class="toc" aria-label="Contents">
+    <h2>What's inside</h2>
+    <p class="lead">One concept, one guided build, then extensions you add yourself.</p>
+    <ol>
+      <li><a href="#ch1">The shape that models everything<span class="desc">Why list-of-dicts is the pattern behind real apps.</span></a></li>
+      <li><a href="#ch2">Working the shape<span class="desc">Add, loop, filter, total. The four moves.</span></a></li>
+      <li><a href="#ch3">Worked example<span class="desc">A mini product catalog, solved step by step.</span></a></li>
+      <li><a href="#ch4">The build: Finance Tracker v1<span class="desc">A menu-driven expense tracker, built in five steps.</span></a></li>
+      <li><a href="#ch5">Homework<span class="desc">Six extensions to the tracker.</span></a></li>
+    </ol>
+  </nav>
+
+  <section class="howto">
+    <h3>Today's goal</h3>
+    <p>Ship a working program. Not an exercise, an <strong>application</strong>: it runs in a loop, shows a menu, takes commands, and manages real data. It is version 1 of the project you will upgrade in the coming weeks with functions, file storage, and objects. Build it in your <code>python-core</code> project, run with <code>uv run main.py</code>.</p>
+  </section>
+
+  <!-- CH1 -->
+  <section class="chapter" id="ch1">
+    <span class="chapter-no">Part 01</span>
+    <h2>The shape that models everything</h2>
+    <p class="lead-para">One record is a dict. Many records is a list of dicts. That single sentence describes the data inside almost every real application.</p>
+    <p>Look at what this shape can represent:</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>App</th><th>The list holds...</th><th>Each dict holds...</th></tr></thead>
+        <tbody>
+          <tr><td>Contacts app</td><td>All contacts</td><td>name, phone, email</td></tr>
+          <tr><td>Online store</td><td>All products</td><td>name, price, stock</td></tr>
+          <tr><td>Expense tracker</td><td>All expenses</td><td>name, amount, category</td></tr>
+          <tr><td>Playlist</td><td>All songs</td><td>title, artist, duration</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The division of labor is exact. The <strong>dict</strong> gives each record labeled fields. The <strong>list</strong> gives you an ordered, growable collection of those records. Here is one expense record, then a collection of them:</p>
+    <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py</span></div><pre><span class="cmt"># one record: a dict</span>
+expense = {<span class="str">"name"</span>: <span class="str">"Coffee"</span>, <span class="str">"amount"</span>: <span class="num">150</span>, <span class="str">"category"</span>: <span class="str">"food"</span>}
+
+<span class="cmt"># many records: a list of dicts</span>
+expenses = [
+    {<span class="str">"name"</span>: <span class="str">"Coffee"</span>,  <span class="str">"amount"</span>: <span class="num">150</span>,  <span class="str">"category"</span>: <span class="str">"food"</span>},
+    {<span class="str">"name"</span>: <span class="str">"Bus pass"</span>, <span class="str">"amount"</span>: <span class="num">500</span>,  <span class="str">"category"</span>: <span class="str">"travel"</span>},
+    {<span class="str">"name"</span>: <span class="str">"Movie"</span>,   <span class="str">"amount"</span>: <span class="num">300</span>,  <span class="str">"category"</span>: <span class="str">"fun"</span>},
+]</pre></div>
+    <div class="takeaway">
+      <span class="label">Key idea</span>
+      <p>Dict = one labeled record. List = the growing collection. Master this combination and you can model the data of nearly any application.</p>
+    </div>
+    <a class="totop" href="#">↑ Back to top</a>
+  </section>
+
+  <!-- CH2 -->
+  <section class="chapter" id="ch2">
+    <span class="chapter-no">Part 02</span>
+    <h2>Working the shape: the four moves</h2>
+    <p class="lead-para">Everything you do with a list of dicts reduces to four moves. Learn these and the project is straightforward.</p>
+
+    <h4>Move 1 · Add a record</h4>
+    <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py</span></div><pre>new = {<span class="str">"name"</span>: <span class="str">"Book"</span>, <span class="str">"amount"</span>: <span class="num">450</span>, <span class="str">"category"</span>: <span class="str">"study"</span>}
+expenses.append(new)</pre></div>
+
+    <h4>Move 2 · Loop and read fields</h4>
+    <p>Each pass, the loop variable is one whole dict. Read its fields by key.</p>
+    <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py</span></div><pre><span class="kw">for</span> e <span class="kw">in</span> expenses:
+    <span class="kw">print</span>(<span class="str">f"{e['name']}: {e['amount']} ({e['category']})"</span>)</pre></div>
+    <p class="out">Coffee: 150 (food)
+Bus pass: 500 (travel)
+Movie: 300 (fun)</p>
+
+    <h4>Move 3 · Total a field (accumulator, or comprehension)</h4>
+    <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py</span></div><pre><span class="cmt"># the loop way (Week 0 pattern)</span>
+total = <span class="num">0</span>
+<span class="kw">for</span> e <span class="kw">in</span> expenses:
+    total += e[<span class="str">"amount"</span>]
+
+<span class="cmt"># the comprehension way (yesterday's tool)</span>
+total = <span class="kw">sum</span>(e[<span class="str">"amount"</span>] <span class="kw">for</span> e <span class="kw">in</span> expenses)   <span class="cmt"># 950</span></pre></div>
+
+    <h4>Move 4 · Filter by a field</h4>
+    <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py</span></div><pre>food = [e <span class="kw">for</span> e <span class="kw">in</span> expenses <span class="kw">if</span> e[<span class="str">"category"</span>] == <span class="str">"food"</span>]</pre></div>
+
+    <div class="note">
+      <span class="label">Quote marks inside quote marks</span>
+      <p>Inside an f-string written with double quotes, use single quotes for keys: <code>f"{e['name']}"</code>. Mixing them wrong is the most common syntax error today.</p>
+    </div>
+    <a class="totop" href="#">↑ Back to top</a>
+  </section>
+
+  <!-- CH3 -->
+  <section class="chapter" id="ch3">
+    <span class="chapter-no">Part 03 · Solved together</span>
+    <h2>Worked example</h2>
+
+    <div class="worked">
+      <span class="tag">Example · All four moves at once</span>
+      <h3>A mini product catalog</h3>
+      <p>A shop's inventory: add a product, list everything, total the stock value, and filter the cheap items. This is the exact skeleton of the tracker, on different data.</p>
+      <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py</span></div><pre>products = [
+    {<span class="str">"name"</span>: <span class="str">"Pen"</span>,      <span class="str">"price"</span>: <span class="num">20</span>,  <span class="str">"stock"</span>: <span class="num">100</span>},
+    {<span class="str">"name"</span>: <span class="str">"Notebook"</span>, <span class="str">"price"</span>: <span class="num">60</span>,  <span class="str">"stock"</span>: <span class="num">40</span>},
+]
+
+<span class="cmt"># Move 1: add a record</span>
+products.append({<span class="str">"name"</span>: <span class="str">"Bag"</span>, <span class="str">"price"</span>: <span class="num">900</span>, <span class="str">"stock"</span>: <span class="num">5</span>})
+
+<span class="cmt"># Move 2: loop and print</span>
+<span class="kw">for</span> p <span class="kw">in</span> products:
+    <span class="kw">print</span>(<span class="str">f"{p['name']}: ₹{p['price']} ({p['stock']} in stock)"</span>)
+
+<span class="cmt"># Move 3: total value of all stock (price × stock, summed)</span>
+value = <span class="kw">sum</span>(p[<span class="str">"price"</span>] * p[<span class="str">"stock"</span>] <span class="kw">for</span> p <span class="kw">in</span> products)
+<span class="kw">print</span>(<span class="str">f"Total stock value: ₹{value}"</span>)
+
+<span class="cmt"># Move 4: filter items under ₹100</span>
+cheap = [p[<span class="str">"name"</span>] <span class="kw">for</span> p <span class="kw">in</span> products <span class="kw">if</span> p[<span class="str">"price"</span>] &lt; <span class="num">100</span>]
+<span class="kw">print</span>(<span class="str">f"Under ₹100: {cheap}"</span>)</pre></div>
+      <p class="out">Pen: ₹20 (100 in stock)
+Notebook: ₹60 (40 in stock)
+Bag: ₹900 (5 in stock)
+Total stock value: ₹<b>8900</b>
+Under ₹100: <b>['Pen', 'Notebook']</b></p>
+      <p>Note Move 3: the comprehension can compute per record (<code>price * stock</code>) before summing. One line replaces a whole accumulator loop.</p>
+    </div>
+    <a class="totop" href="#">↑ Back to top</a>
+  </section>
+
+  <!-- CH4 BUILD -->
+  <section class="chapter" id="ch4">
+    <span class="chapter-no">Part 04 · The build</span>
+    <h2>Finance Tracker v1</h2>
+    <p class="lead-para">A menu-driven expense tracker. It runs until you quit, and supports: add an expense, list all, show the total, filter by category. Build it step by step; run after every step.</p>
+
+    <div class="step">
+      <div class="head"><span class="num">1</span><h3>The skeleton: a menu that loops</h3></div>
+      <p>Start with the app's frame: an empty list, and a <code>while True</code> loop showing a menu. Option 5 uses <code>break</code> to quit. Everything else plugs into this frame.</p>
+      <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py</span></div><pre>expenses = []
+
+<span class="kw">while</span> <span class="kw">True</span>:
+    <span class="kw">print</span>(<span class="str">"\n=== Finance Tracker ==="</span>)
+    <span class="kw">print</span>(<span class="str">"1. Add expense"</span>)
+    <span class="kw">print</span>(<span class="str">"2. List all"</span>)
+    <span class="kw">print</span>(<span class="str">"3. Total spend"</span>)
+    <span class="kw">print</span>(<span class="str">"4. Filter by category"</span>)
+    <span class="kw">print</span>(<span class="str">"5. Quit"</span>)
+
+    choice = <span class="kw">input</span>(<span class="str">"Choose (1-5): "</span>)
+
+    <span class="kw">if</span> choice == <span class="str">"5"</span>:
+        <span class="kw">print</span>(<span class="str">"Goodbye!"</span>)
+        <span class="kw">break</span></pre></div>
+      <p>Run it. You should see the menu repeat until you enter 5.</p>
+    </div>
+
+    <div class="step">
+      <div class="head"><span class="num">2</span><h3>Option 1: add an expense</h3></div>
+      <p>Ask for the three fields, build a dict, append it. This is Move 1 plus Week 0's <code>input</code> and type conversion. Add this inside the loop:</p>
+      <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py (inside the while loop)</span></div><pre>    <span class="kw">elif</span> choice == <span class="str">"1"</span>:
+        name = <span class="kw">input</span>(<span class="str">"Expense name: "</span>)
+        amount = <span class="kw">float</span>(<span class="kw">input</span>(<span class="str">"Amount: "</span>))
+        category = <span class="kw">input</span>(<span class="str">"Category: "</span>).lower()
+        expenses.append({<span class="str">"name"</span>: name, <span class="str">"amount"</span>: amount, <span class="str">"category"</span>: category})
+        <span class="kw">print</span>(<span class="str">f"Added: {name}"</span>)</pre></div>
+      <div class="note"><span class="label">Why .lower()</span><p>Storing categories lowercased means <code>"Food"</code> and <code>"food"</code> count as the same category when you filter later. Normalize data when it enters, not when you read it.</p></div>
+    </div>
+
+    <div class="step">
+      <div class="head"><span class="num">3</span><h3>Option 2: list all expenses</h3></div>
+      <p>Move 2, with one addition: <code>enumerate</code> numbers each row for a readable display. Handle the empty case explicitly.</p>
+      <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py (inside the while loop)</span></div><pre>    <span class="kw">elif</span> choice == <span class="str">"2"</span>:
+        <span class="kw">if</span> <span class="kw">not</span> expenses:
+            <span class="kw">print</span>(<span class="str">"No expenses yet."</span>)
+        <span class="kw">else</span>:
+            <span class="kw">for</span> i, e <span class="kw">in</span> <span class="kw">enumerate</span>(expenses, start=<span class="num">1</span>):
+                <span class="kw">print</span>(<span class="str">f"{i}. {e['name']} — ₹{e['amount']} ({e['category']})"</span>)</pre></div>
+      <div class="note"><span class="label">Two things here</span><p><code>if not expenses:</code> is truthiness from Week 0: an empty list counts as False. <code>enumerate(..., start=1)</code> gives you a counter and the item together, starting at 1 for humans.</p></div>
+    </div>
+
+    <div class="step">
+      <div class="head"><span class="num">4</span><h3>Option 3: total spend</h3></div>
+      <p>Move 3 in one line.</p>
+      <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py (inside the while loop)</span></div><pre>    <span class="kw">elif</span> choice == <span class="str">"3"</span>:
+        total = <span class="kw">sum</span>(e[<span class="str">"amount"</span>] <span class="kw">for</span> e <span class="kw">in</span> expenses)
+        <span class="kw">print</span>(<span class="str">f"Total spend: ₹{total}"</span>)</pre></div>
+    </div>
+
+    <div class="step">
+      <div class="head"><span class="num">5</span><h3>Option 4: filter by category</h3></div>
+      <p>Move 4: ask which category, filter with a comprehension, print the matches and their subtotal.</p>
+      <div class="code"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="name">main.py (inside the while loop)</span></div><pre>    <span class="kw">elif</span> choice == <span class="str">"4"</span>:
+        cat = <span class="kw">input</span>(<span class="str">"Which category? "</span>).lower()
+        matches = [e <span class="kw">for</span> e <span class="kw">in</span> expenses <span class="kw">if</span> e[<span class="str">"category"</span>] == cat]
+        <span class="kw">if</span> <span class="kw">not</span> matches:
+            <span class="kw">print</span>(<span class="str">f"Nothing in '{cat}'."</span>)
+        <span class="kw">else</span>:
+            <span class="kw">for</span> e <span class="kw">in</span> matches:
+                <span class="kw">print</span>(<span class="str">f"- {e['name']}: ₹{e['amount']}"</span>)
+            subtotal = <span class="kw">sum</span>(e[<span class="str">"amount"</span>] <span class="kw">for</span> e <span class="kw">in</span> matches)
+            <span class="kw">print</span>(<span class="str">f"Subtotal: ₹{subtotal}"</span>)
+
+    <span class="kw">else</span>:
+        <span class="kw">print</span>(<span class="str">"Invalid choice, try 1-5."</span>)</pre></div>
+      <p>The final <code>else</code> catches any input that isn't 1-5. Run the full app: add a few expenses across categories, list them, total them, filter them, quit. If all five options behave, v1 is shipped.</p>
+    </div>
+
+    <div class="warnbox">
+      <h4>Known limits of v1 (on purpose)</h4>
+      <p>Typing letters where a number is expected crashes the app, and all data vanishes when you quit. Both are real flaws, and both are the exact topics of upcoming weeks (error handling, then file storage). Noticing the flaws now is the point.</p>
+    </div>
+
+    <div class="takeaway">
+      <span class="label">What you shipped</span>
+      <p>A running application: a persistent loop, a menu, user input, and a list-of-dicts data model with add, list, total, and filter. Every future version of this app builds on today's file.</p>
+    </div>
+    <a class="totop" href="#">↑ Back to top</a>
+  </section>
+
+  <!-- CH5 HW -->
+  <section class="chapter" id="ch5" style="border-bottom:none;">
+    <span class="chapter-no">Part 05 · Your turn</span>
+    <h2>Homework: extend the tracker</h2>
+    <p class="lead-para">Six extensions, easiest first. Each adds one feature to your own tracker. You are modifying a real codebase now, which is exactly what programming is.</p>
+
+    <div class="hw">
+      <span class="hwlabel">Extensions</span>
+      <ol>
+        <li>Show the <strong>count of expenses</strong> next to the total in option 3, e.g. <code>Total: ₹950 across 3 expenses</code>.<span class="hint">len() on the list.</span></li>
+        <li>In the list view, show amounts with <strong>2 decimal places</strong>.<span class="hint">f-string formatting: {value:.2f}</span></li>
+        <li>Add option 6: show the <strong>most expensive</strong> expense.<span class="hint">Loop with a "biggest so far" variable (Week 0 warm-up), comparing e["amount"].</span></li>
+        <li>Add option 7: show the <strong>average</strong> expense amount.<span class="hint">Total divided by count. Guard the empty-list case: dividing by zero crashes.</span></li>
+        <li>Add option 8: list all <strong>unique categories</strong>.<span class="hint">A set comprehension over e["category"] does it in one line.</span></li>
+        <li>Add option 9: <strong>spend per category</strong>, every category with its subtotal. <span class="badge">capstone</span><span class="hint">Build a dict: category as key, running subtotal as value. Loop expenses, add each amount to its category's entry.</span></li>
+      </ol>
+    </div>
+
+    <div class="takeaway">
+      <span class="label">How to know you've won</span>
+      <p>Extensions 1-5 are direct applications of the four moves plus yesterday's structures. Extension 6 is the real test: building a summary dict from a list of dicts is the pattern behind every report and dashboard you will ever write.</p>
+    </div>
+    <a class="totop" href="#">↑ Back to top</a>
+  </section>
+
+</div>
+
+<footer>
+  <div class="brand">learning.nexolv.ai</div>
+  <div>Python Core — Week 1 · Day 2 · Finance Tracker v1</div>
+</footer>
+
+<script>
+(function(){
+  var bar=document.getElementById('progress');
+  function update(){var h=document.documentElement;var max=h.scrollHeight-h.clientHeight;bar.style.width=(max>0?(h.scrollTop/max)*100:0)+'%';}
+  document.addEventListener('scroll',update,{passive:true});update();
+})();
+</script>
+
+</body>
+</html>
